@@ -14,8 +14,17 @@ Stripe will be used as payment system. Integration is in progress.
 This api is intended to be used by mobile apps or ajax applications.
 
 
+Start server:
+```
+lein ring server-headless
+```
 
-Unit tests: lein test clojushop.test.handler
+
+
+Unit tests: 
+```
+lein test clojushop.test.handler
+```
 
 
 
