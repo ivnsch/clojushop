@@ -82,7 +82,7 @@ Code  | Meaning
 4  | Not found
 5  | Database internal error
 
-The webservice and dataprovider codes are completely independent in each other. The webservice layer decides how to react to database result codes.
+The webservice and dataprovider codes are completely independent in each other. The webservice layer (https://github.com/i-schuetz/clojushop/blob/master/src/clojushop/handler.clj) decides how to handle database result codes.
 
 
 
