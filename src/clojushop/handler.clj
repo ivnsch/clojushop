@@ -21,6 +21,7 @@
             [clojushop.utils :as utils]
             [clojushop.logger :as log]
             [clojushop.paths :as paths]
+            [clojushop.http-constants :as chttp]
             ))
 
 
@@ -228,7 +229,7 @@ and then wrap this with a new key wrapper-key"
       (handler/api app-routes)
 
       (session/wrap-session
-       {:cookie-name "clog-session" :store (cookie-store)}
+       {:cookie-name chttp/session-cookie-prefix :store (cookie-store)}
        ;{:cookie-attrs {:max-age 3600}}
        )
       

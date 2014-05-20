@@ -8,13 +8,12 @@
             [clojushop.dataprovider :as dataprovider]
             [clojushop.logger :as log]
             [clojushop.paths :as paths]
+            [clojushop.http-constants :as chttp]
             ))
 
 (import java.lang.reflect.Modifier)
 
 
-
-(def cookie-prefix "clog-session")
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;general utils TODO move
@@ -88,7 +87,7 @@
 
 (defn wrap-req-auth [request token]
   (-> request
-      (header "Cookie" (str cookie-prefix "=" token))))
+      (header "Cookie" (str chttp/session-cookie-prefix "=" token))))
 
 (defn wrap-req-json-auth [request token]
   (-> request
@@ -208,9 +207,9 @@
   (is (not (empty? (get-set-cookie-header response)))))
 
 (defn get-auth-token [response]
-  (let [auth-cookie (first (filter #(.contains % cookie-prefix) (get-set-cookie-header response)))
+  (let [auth-cookie (first (filter #(.contains % chttp/session-cookie-prefix) (get-set-cookie-header response)))
         cookie-map (keyvals-str-to-map auth-cookie #"=" #";")
-        auth-token ((keyword cookie-prefix) cookie-map)
+        auth-token ((keyword chttp/session-cookie-prefix) cookie-map)
         ]
     auth-token))
         
@@ -696,7 +695,7 @@
               (is (not (nil? set-cookie-header)))
               (is (not (empty? set-cookie-header)))
               (is (not (empty? (nth set-cookie-header 0))))
-              (is (.contains (nth set-cookie-header 0) cookie-prefix))
+              (is (.contains (nth set-cookie-header 0) chttp/session-cookie-prefix))
 
               (let [auth-token (get-auth-token response)]
 
