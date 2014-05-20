@@ -29,7 +29,7 @@ lein test clojushop.test.handler
 
 
 
-All webservice have a status flag. Possible codes:
+All webservice responses have a status flag. Possible codes:
 
 Code  | Meaning
 ------------- | -------------
