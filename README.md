@@ -51,7 +51,7 @@ curl -i -H --request GET 'http://localhost:3000/cart-get'  --cookie "cookies.txt
 lein test clojushop.test.handler
 ```
 
-The unit tests in https://github.com/i-schuetz/clojushop/blob/master/test/clojushop/test/handler.clj have explanations and can help understanding how to use the api.
+The unit tests in https://github.com/i-schuetz/clojushop/blob/master/test/clojushop/test/handler.clj do request calls and response processing like a normal client, thus can also help with further understanding about how to use the api.
 
 
 
