@@ -73,7 +73,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;products
 
-(defn get-products [params]
+(defn products-get [params]
   (let [start (Integer. (:st params))
         size (Integer. (:sz params))]
     
@@ -83,16 +83,16 @@
                                  (mq/limit size)
                                  (mq/skip start))))))
 
-(defn create-product [params]
+(defn product-add [params]
   (db-write-handler #(mc/insert coll-products (mp/product-catalog-db params))))
 
-(defn remove-product [params]
+(defn product-remove [params]
   (let [id (ObjectId. (:id params))]
     
     (db-write-handler #(mc/remove coll-products {:_id id}))))
 
 
-(defn edit-product [params]
+(defn product-edit [params]
   (let [id (ObjectId. (:id params))]
     
     (log/debug

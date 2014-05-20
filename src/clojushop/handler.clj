@@ -121,18 +121,18 @@ and then wrap this with a new key wrapper-key"
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;handlers
 
-(ws-handler get-products [params]
+(ws-handler products-get [params]
   (val/validate-products-get params (fn [] (wrap-data-provider-op 
-                                                     (dataprovider/get-products params)
+                                                     (dataprovider/products-get params)
                                                      (map-db-result-data-to-ws mp/product-ws :products)))))
-(ws-handler create-product [params]
-  (val/validate-product-create params #(dataprovider/create-product params)))
+(ws-handler product-add [params]
+  (val/validate-product-add params #(dataprovider/product-add params)))
 
-(ws-handler remove-product [params]
-  (val/validate-product-remove params #(dataprovider/remove-product params)))
+(ws-handler product-remove [params]
+  (val/validate-product-remove params #(dataprovider/product-remove params)))
 
-(ws-handler edit-product [params]
-  (val/validate-product-edit params #(dataprovider/edit-product params)))
+(ws-handler product-edit [params]
+  (val/validate-product-edit params #(dataprovider/product-edit params)))
 
 
 
@@ -176,7 +176,7 @@ and then wrap this with a new key wrapper-key"
 ;routes
 
 (defroutes public-routes
-  (GET paths/products {params :params} (get-products params))
+  (GET paths/products {params :params} (products-get params))
   (POST paths/user-register {params :params} (user-register params))
   (POST paths/user-login request (login request)))
 
@@ -188,9 +188,9 @@ and then wrap this with a new key wrapper-key"
   (GET paths/user-logout request (logout request))
 
   ;products
-  (POST paths/product-add {params :params} (create-product params))
-  (POST paths/product-remove {params :params} (remove-product params))
-  (POST paths/product-edit {params :params} (edit-product params))
+  (POST paths/product-add {params :params} (product-add params))
+  (POST paths/product-remove {params :params} (product-remove params))
+  (POST paths/product-edit {params :params} (product-edit params))
   
   ;cart
   (GET paths/cart-get {params :params} (cart-get params))

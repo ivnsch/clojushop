@@ -52,7 +52,7 @@
    (val-is-int :sz)
    ))
 
-(def validations-create-product
+(def validations-product-add
 (val/validation-set
             (val-empty :na)
             (val-empty :des)
@@ -85,7 +85,7 @@
             
             (val-db-id :id)))
 
-(def validations-user-create
+(def validations-user-register
 
   (val/validation-set
             (val-empty :na)
@@ -180,8 +180,8 @@
 (defn validate-products-get [params on-validated]
   (validate validations-get-products params on-validated))
 
-(defn validate-product-create [params on-validated]
-  (validate validations-create-product params on-validated))
+(defn validate-product-add [params on-validated]
+  (validate validations-product-add params on-validated))
 
 (defn validate-product-remove [params on-validated]
   (validate validations-remove-product params on-validated))
@@ -212,7 +212,7 @@
   (validate validations-user-remove params on-validated))
 
 (defn validate-user-register [params on-validated]
-  (validate validations-user-create params on-validated))
+  (validate validations-user-register params on-validated))
 
 (defn validate-user-edit [params on-validated]
   (validate validations-user-edit params on-validated))
