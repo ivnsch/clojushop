@@ -1,2 +1,4 @@
 
 .lein-failures
+
+target/stale/extract-native.dependencies
