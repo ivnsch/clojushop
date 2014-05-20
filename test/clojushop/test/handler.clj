@@ -7,6 +7,7 @@
             [clojushop.status-codes :as status]
             [clojushop.dataprovider :as dataprovider]
             [clojushop.logger :as log]
+            [clojushop.paths :as paths]
             ))
 
 (import java.lang.reflect.Modifier)
@@ -262,7 +263,7 @@
 
 ;TODO remove
 (defn register-user1 []
-  (app (request :post "/user-register" {:na "user1" :em "user2@foo.com" :pw "test123"})))
+  (app (request :post paths/user-register {:na "user1" :em "user2@foo.com" :pw "test123"})))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -271,7 +272,7 @@
   
   (log/test-name "product-add, authorized, products empty")
 
-  (let [response (req-post-auth "/product/add" (dummy-products 0) token)]
+  (let [response (req-post-auth paths/product-add (dummy-products 0) token)]
 ;  (let [response (app (-> (request-json-auth2 (request :post "/product/add" (clojure.data.json/write-str (dummy-products 0))) token)))]
     (log/response response)
 
@@ -282,7 +283,7 @@
       (test-success-body body)))
 
   (log/test-name "product-get, authorized, after add one product")
-  (let [response (req-get "/products" {:st 0 :sz 2})]
+  (let [response (req-get paths/products-get {:st 0 :sz 2})]
     (log/response response)
 
     (test-valid-response response)
@@ -297,7 +298,7 @@
           (is (test-valid-product (product))))))
 
   (log/test-name "product-add, authorized, add second product")
-  (let [response (req-post-auth "/product/add" (dummy-products 1) token)]
+  (let [response (req-post-auth paths/product-add (dummy-products 1) token)]
     (log/response response)
 
     (test-valid-response response)
@@ -307,7 +308,7 @@
       (test-success-body body)))
 
   (log/test-name "product-get, after add second product")
-  (let [response (req-get "/products" {:st 0 :sz 2})]
+  (let [response (req-get paths/products-get {:st 0 :sz 2})]
     (log/response response)
 
     (test-valid-response response)
@@ -323,7 +324,7 @@
       ))
 
   (log/test-name "product-get, authorized, after add second product, test pagination")
-  (let [response (req-get "/products" {:st 0 :sz 1})]
+  (let [response (req-get paths/products-get {:st 0 :sz 1})]
     (log/response response)
 
     (test-valid-response response)
@@ -341,7 +342,7 @@
       (let [product-id (:id ((:products body) 0))]
 
         (log/test-name "product-remove, authorized, remove the product we retrieved")
-        (let [response (req-post-auth "/product/remove" {:id product-id} token)]
+        (let [response (req-post-auth paths/product-remove {:id product-id} token)]
           (log/response response)
 
           (test-valid-response response)
@@ -353,7 +354,7 @@
           )
 
         (log/test-name "products-get, after remove")
-        (let [response (req-get "/products" {:st 0 :sz 2})]
+        (let [response (req-get paths/products-get {:st 0 :sz 2})]
           (log/response response)
 
           (test-valid-response response)
@@ -375,7 +376,7 @@
                     new-name "new-name"
                     new-price "999.9"
                     new-desc "new-description"
-                    response (req-post-auth "/product/edit" {:id product-id :na new-name :pr new-price :des new-desc} token)]
+                    response (req-post-auth paths/product-edit {:id product-id :na new-name :pr new-price :des new-desc} token)]
                 (log/response response)
 
                 (test-valid-response response)
@@ -386,7 +387,7 @@
 
 
                 (log/test-name "product-get, authorized, after edit")
-                (let [response (req-get "/products" {:st 0 :sz 2})]
+                (let [response (req-get paths/products-get {:st 0 :sz 2})]
                   (log/response response)
 
                   (test-valid-response response)
@@ -423,7 +424,7 @@
   (testing "products"
 
     (log/test-name "product-get, no params")
-    (let [response (req-get "/products")]
+    (let [response (req-get paths/products-get)]
     (log/response response)
 
     (test-valid-response response)
@@ -433,7 +434,7 @@
       (test-body-status body status/validation-error)))
   
     (log/test-name "get-products, empty")
-    (let [response (req-get "/products" {:st 0 :sz 2})]
+    (let [response (req-get paths/products-get {:st 0 :sz 2})]
       (log/response response)
 
       (test-valid-response-with-body response)
@@ -448,7 +449,7 @@
 
 
     (log/test-name "add product without authorization...")    
-    (let [response (req-post "/product-add" (dummy-products 0))]
+    (let [response (req-post paths/product-add (dummy-products 0))]
       
        (test-valid-response response)
 
@@ -461,7 +462,7 @@
        ;register and login a user
        (register-user1) ;TODO add the user in fill-db-with-test-data
        (log/test-name "loggin in the user...")
-       (let [response (req-post "/login" {:username "user1" :password "test123"})
+       (let [response (req-post paths/user-login {:username "user1" :password "test123"})
              auth-token (get-auth-token response)]
 
          (test-products-logged-in auth-token))
@@ -477,7 +478,7 @@
 (defn test-users-logged-in [token]
 
   (log/test-name "getting user we registered, authenticated")
-  (let [response (req-get-auth "/user-get" token)]
+  (let [response (req-get-auth paths/user-get token)]
     (log/response response)
 
     (test-valid-response-with-body response)
@@ -499,7 +500,7 @@
   (log/test-name "editing user email, authenticated")
   (let [
         new-email "new-email@bla.com"
-        response (req-post-auth "/user-edit" {:em new-email} token)]
+        response (req-post-auth paths/user-edit {:em new-email} token)]
     (log/response response)
 
     (test-valid-response-with-body response)
@@ -510,7 +511,7 @@
         (test-success-body body)
 
         (log/test-name "get user after edit, authenticated")
-        (let [response (req-get-auth "/user-get" token)]
+        (let [response (req-get-auth paths/user-get token)]
           (log/response response)
 
           (test-valid-response-with-body response)
@@ -534,7 +535,7 @@
   ;TODO test edit password
   
   (log/test-name "logout, authenticated")
-  (let [response (req-get-auth "/logout" token)]
+  (let [response (req-get-auth paths/user-logout token)]
     (log/response response)
 
     (test-valid-response-with-body response)
@@ -550,7 +551,7 @@
     (let [logout-auth-token (get-auth-token response)]
 
       (log/test-name "get user after logout, with logout session token")
-      (let [response (req-get-auth "/user-get" logout-auth-token)]
+      (let [response (req-get-auth paths/user-get logout-auth-token)]
         (log/response response)
 
         (test-valid-response-with-body response)
@@ -563,7 +564,7 @@
     )
 
   (log/test-name "get user after logout, with old session token")
-  (let [response (req-get-auth "/user-get" token)]
+  (let [response (req-get-auth paths/user-get token)]
     (log/response response)
 
     (test-valid-response-with-body response)
@@ -579,14 +580,14 @@
 
   
   (log/info "logging in again...")
-  (let [response (req-post "/login" {:username "user1" :password "test123"})
+  (let [response (req-post paths/user-login {:username "user1" :password "test123"})
         auth-token (get-auth-token response)]
 
     (log/debug (str "response of login: " response))
 
     
     (log/test-name "removing user, authenticated")
-    (let [response (req-get-auth "/user-remove" auth-token)]
+    (let [response (req-get-auth paths/user-remove auth-token)]
       (log/response response)
 
       (test-valid-response-with-body response)
@@ -602,7 +603,7 @@
 
         ;check that the user is gone using a still valid auth token
         (log/test-name "get user after remove, with old session token")
-        (let [response (req-get-auth "/user-get" auth-token)]
+        (let [response (req-get-auth paths/user-get auth-token)]
           (log/response response)
 
           (test-valid-response-with-body response)
@@ -627,7 +628,7 @@
   (testing "users"
 
     (log/test-name "user-register no params")
-    (let [response (req-post "/user-register")]
+    (let [response (req-post paths/user-register)]
       (log/response response)
 
       (test-valid-response response)
@@ -635,7 +636,7 @@
     )
     
     (log/test-name "user-register wrong params")
-    (let [response (req-post "/user-register" (clojure.data.json/write-str {:na "aaaaaaa"}))]
+    (let [response (req-post paths/user-register (clojure.data.json/write-str {:na "aaaaaaa"}))]
       (log/response response)
 
       (test-valid-response response)
@@ -648,7 +649,7 @@
      )
 
     (log/test-name "registering user...")
-    (let [response (req-post "/user-register" {:na "user1" :em "user1@foo.com" :pw "test123"})]
+    (let [response (req-post paths/user-register {:na "user1" :em "user1@foo.com" :pw "test123"})]
       (log/response response)
 
       (test-valid-response-with-body response)
@@ -660,7 +661,7 @@
         ))
 
     (log/test-name "registering a new user with same name")
-    (let [response (req-post "/user-register" {:na "user1" :em "user2@foo.com" :pw "test123"})]
+    (let [response (req-post paths/user-register {:na "user1" :em "user2@foo.com" :pw "test123"})]
       
       (log/response response)
 
@@ -672,7 +673,7 @@
         (test-body-status body status/user-already-exists)))
 
     (log/test-name "getting user we registered, not authenticated")
-    (let [response (req-get "/user-get" {:na "user1"})]
+    (let [response (req-get paths/user-get {:na "user1"})]
 
       (log/response response)
       
@@ -684,7 +685,7 @@
         (test-body-status body status/not-auth)))
 
     (log/test-name "login, with user we just registered")
-    (let [response (req-post "/login" {:username "user1" :password "test123"})]
+    (let [response (req-post paths/user-login {:username "user1" :password "test123"})]
 
             (log/response response)
       
@@ -707,7 +708,7 @@
 (defn test-cart-logged-in [token]
 
   (log/test-name "cart-get, authorized, cart empty")
-  (let [response (req-get-auth "/cart-get" token)]
+  (let [response (req-get-auth paths/cart-get token)]
     (log/response response)
 
     (test-valid-response response)
@@ -724,7 +725,7 @@
 
   
      (log/test-name "cart-add, authorized, cart empty")
-     (let [response (req-post-auth "/cart-add" {:pid (index-to-db-id 0)} token)]
+     (let [response (req-post-auth paths/cart-add {:pid (index-to-db-id 0)} token)]
        (log/response response)
 
        (test-valid-response response)
@@ -737,7 +738,7 @@
        )
 
      (log/test-name "cart-get, authorized, one item")
-     (let [response (req-get-auth "/cart-get" token)]
+     (let [response (req-get-auth paths/cart-get token)]
        (log/response response)
 
        (test-valid-response response)
@@ -771,7 +772,7 @@
        )
 
      (log/test-name "cart-add, authorized, one item with qt 1")
-     (let [response (req-post-auth "/cart-add" {:pid (index-to-db-id 0)} token)]
+     (let [response (req-post-auth paths/cart-add {:pid (index-to-db-id 0)} token)]
        (log/response response)
 
        (test-valid-response response)
@@ -784,7 +785,7 @@
        )     
      
      (log/test-name "cart-get, authorized, one item with qt 2")
-     (let [response (req-get-auth "/cart-get" token)]
+     (let [response (req-get-auth paths/cart-get token)]
        (log/response response)
 
        (test-valid-response response)
@@ -818,7 +819,7 @@
        )
 
      (log/test-name "cart-add, authorized, item with different id")
-     (let [response (req-post-auth "/cart-add" {:pid (index-to-db-id 1)} token)]
+     (let [response (req-post-auth paths/cart-add {:pid (index-to-db-id 1)} token)]
        (log/response response)
 
        (test-valid-response response)
@@ -831,7 +832,7 @@
        )
 
      (log/test-name "cart-get, authorized, 2 items - one with qt 2 other qt 1")
-     (let [response (req-get-auth "/cart-get" token)]
+     (let [response (req-get-auth paths/cart-get token)]
        (log/response response)
 
        (test-valid-response response)
@@ -880,7 +881,7 @@
        )     
      
      (log/test-name "cart-quantity, authorized, set quantity")
-     (let [response (req-post-auth "/cart-quantity" {:pid (index-to-db-id 0) :qt 3} token)]
+     (let [response (req-post-auth paths/cart-quantity {:pid (index-to-db-id 0) :qt 3} token)]
        (log/response response)
 
        (test-valid-response response)
@@ -892,7 +893,7 @@
          (test-success-body body)))
 
      (log/test-name "cart-get, authorized, checking quantity")
-     (let [response (req-get-auth "/cart-get" token)]
+     (let [response (req-get-auth paths/cart-get token)]
        (log/response response)
 
        (test-valid-response response)
@@ -911,7 +912,7 @@
            (is (= (:qt item) 3)))))
 
      (log/test-name "cart-remove, authorized")
-     (let [response (req-post-auth "/cart-remove" {:pid (index-to-db-id 0)} token)]
+     (let [response (req-post-auth paths/cart-remove {:pid (index-to-db-id 0)} token)]
        (log/response response)
 
        (test-valid-response response)
@@ -922,7 +923,7 @@
       )
      
      (log/test-name "cart-get, authorized, checking remove")
-     (let [response (req-get-auth "/cart-get" token)]
+     (let [response (req-get-auth paths/cart-get token)]
        (log/response response)
 
        (test-valid-response response)
@@ -939,7 +940,7 @@
      
      
      (log/test-name "cart-quantity, authorized, when product is not in the cart")
-     (let [response (req-post-auth "/cart-quantity" {:pid (index-to-db-id 0) :qt 5} token)]
+     (let [response (req-post-auth paths/cart-quantity {:pid (index-to-db-id 0) :qt 5} token)]
        (log/response response)
 
        (test-valid-response response)
@@ -951,7 +952,7 @@
          (test-body-status body 1)))
 
      (log/test-name "cart-get, authorized, after set quantity of product that's not in the cart")
-     (let [response (req-get-auth "/cart-get" token)]
+     (let [response (req-get-auth paths/cart-get token)]
        (log/response response)
 
        (test-valid-response response)
@@ -982,9 +983,8 @@
   ;(dataprovider/fill-db-with-test-data)
 
   ;TODO remove? is this working? this should return not auth
-  (let [response (req-get "/user-get" {:na "user1"})]
+  (let [response (req-get paths/user-get {:na "user1"})]
   
-   ;; (let [response (app (request :get "/user-get" {:na "user1"}))]
      (let [body (cheshire.core/parse-string (:body response) true)]
        (def test-user (:user body))))
 
@@ -994,14 +994,14 @@
    (testing "cart"
 
      (log/test-name "cart-get, not authenticated...")     
-     (let [response (req-get "/cart-get")]
+     (let [response (req-get paths/cart-get)]
        (log/response response)
 
        (test-valid-response-with-body response)
        (test-unauthorized response))
 
      (log/test-name "cart-add, not authenticated...")
-     (let [response (req-post "/cart-add" {:pid (index-to-db-id 0)})]
+     (let [response (req-post paths/cart-add {:pid (index-to-db-id 0)})]
        
        (log/response response)
 
@@ -1014,7 +1014,7 @@
        ;register and login a user
        (register-user1) ;TODO add the user in fill-db-with-test-data
        (log/test-name "loggin in the user...")
-       (let [response (req-post "/login" {:username "user1" :password "test123"})
+       (let [response (req-post paths/user-login {:username "user1" :password "test123"})
              auth-token (get-auth-token response)]
 
          (test-cart-logged-in auth-token))

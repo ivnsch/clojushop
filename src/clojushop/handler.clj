@@ -20,6 +20,7 @@
             [clojushop.param-mappings :as mp]
             [clojushop.utils :as utils]
             [clojushop.logger :as log]
+            [clojushop.paths :as paths]
             ))
 
 
@@ -175,27 +176,27 @@ and then wrap this with a new key wrapper-key"
 ;routes
 
 (defroutes public-routes
-  (GET "/products" {params :params} (get-products params))
-  (POST "/user-register" {params :params} (user-register params))
-  (POST "/login" request (login request)))
+  (GET paths/products {params :params} (get-products params))
+  (POST paths/user-register {params :params} (user-register params))
+  (POST paths/user-login request (login request)))
 
 (defroutes protected-routes
   ;users
-  (GET "/user-get" {params :params} (user-get params))
-  (GET "/user-remove" {params :params} (user-remove params))
-  (POST "/user-edit" {params :params} (user-edit params))
-  (GET "/logout" request (logout request))
+  (GET paths/user-get {params :params} (user-get params))
+  (GET paths/user-remove {params :params} (user-remove params))
+  (POST paths/user-edit {params :params} (user-edit params))
+  (GET paths/user-logout request (logout request))
 
   ;products
-  (POST "/product/add" {params :params} (create-product params))
-  (POST "/product/remove" {params :params} (remove-product params))
-  (POST "/product/edit" {params :params} (edit-product params))
+  (POST paths/product-add {params :params} (create-product params))
+  (POST paths/product-remove {params :params} (remove-product params))
+  (POST paths/product-edit {params :params} (edit-product params))
   
   ;cart
-  (GET "/cart-get" {params :params} (cart-get params))
-  (POST "/cart-remove" {params :params} (cart-remove params))
-  (POST "/cart-add" {params :params} (cart-add params))
-  (POST "/cart-quantity" {params :params} (cart-quantity params)))
+  (GET paths/cart-get {params :params} (cart-get params))
+  (POST paths/cart-remove {params :params} (cart-remove params))
+  (POST paths/cart-add {params :params} (cart-add params))
+  (POST paths/cart-quantity {params :params} (cart-quantity params)))
 
 (defroutes app-routes
   public-routes
