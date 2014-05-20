@@ -3,15 +3,17 @@ clojushop
 
 Online store backend/api written in Clojure
 
-Learning project. JSON api, currently supports user authentication, product list and cart.
+
+JSON api, currently supports user authentication, product list and cart.
 
 Database is easily interchangeable thanks to data provider layer. This implementation uses MongoDB.
 
-
 Stripe will be used as payment system. Integration is in progress.
 
-
 This api is intended to be used by mobile apps or ajax applications.
+
+
+Note that this is a learning project - use at your own risk.
 
 
 Start server:
