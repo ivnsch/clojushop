@@ -6,7 +6,7 @@ Online store backend/api written in Clojure
 
 JSON api, currently supports user authentication, product list and cart.
 
-Database is easily interchangeable thanks to data provider layer. This implementation uses MongoDB.
+Database is easily interchangeable thanks to data provider layer. Currently MongoDB is used.
 
 Stripe will be used as payment system. Integration is in progress.
 
@@ -16,14 +16,14 @@ This api is intended to be used by mobile apps or ajax applications.
 Note that this is a learning project - use at your own risk.
 
 
-Start server:
+##### Start server:
 ```
 lein ring server-headless
 ```
 
 
 
-Example curl requests:
+###### Example curl requests:
 
 Get products:
 
@@ -46,7 +46,7 @@ curl -i -H --request GET 'http://localhost:3000/cart-get'  --cookie "cookies.txt
 
 
 
-Unit tests: 
+##### Unit tests: 
 ```
 lein test clojushop.test.handler
 ```
@@ -54,6 +54,8 @@ lein test clojushop.test.handler
 The unit tests in https://github.com/i-schuetz/clojushop/blob/master/test/clojushop/test/handler.clj have explanations and can help understanding how to use the api.
 
 
+
+##### Status codes
 
 All webservice responses have a status flag. Possible codes:
 
