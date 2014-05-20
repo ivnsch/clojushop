@@ -20,14 +20,46 @@ Unit tests: lein test clojushop.test.handler
 
 
 
-Webservice responses have JSON body, with a status flag. Possible codes:
+All webservice have a status flag. Possible codes:
 
 ------------- | -------------
-0  | Content Cell
-1  | Content Cell
-1  | Content Cell
-1  | Content Cell
-1  | Content Cell
+
+0  | Unspecified error
+
+1  | Success
+
+2  | Wrong params
+
+3  | Not found
+
+4  | Validation error
+
+5  | User already exists
+
+6  | Login failed
+
+7  | Not authenticated
+
+
+Also, the results delivered by the dataprovider have status. Possible codes:
+
+------------- | -------------
+
+0  | Unspecified error
+
+1  | Success
+
+2  | Bad id
+
+3  | User already exists
+
+4  | Not found
+
+5  | Database internal error
+
+
+The webservice and dataprovider codes are completely independent in each other. The webservice layer decides how to react to database result codes.
+
 
 
 Better documentation will follow soon!
