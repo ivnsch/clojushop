@@ -21,11 +21,35 @@ lein ring server-headless
 
 
 
+Example curl requests:
+
+Get products:
+
+```
+curl --request GET 'http://localhost:3000/products?st=0&sz=2'
+```
+
+Login (note use of cookie store - this will allow us to send next requests authenticated):
+
+```
+curl -i -H "Content-Type: application/json" -X POST -d '{"username":"user1", "password":"test123"}' http://localhost:3000/login  --cookie "cookies.txt" --cookie-jar "cookies.txt" --location --verbose
+```
+
+
+Get cart (authenticated request):
+
+```
+curl -i -H --request GET 'http://localhost:3000/cart-get'  --cookie "cookies.txt" --cookie-jar "cookies.txt" --location --verbose
+```
+
+
+
 Unit tests: 
 ```
 lein test clojushop.test.handler
 ```
 
+The unit tests in https://github.com/i-schuetz/clojushop/blob/master/test/clojushop/test/handler.clj have explanations and can help understanding how to use the api.
 
 
 
@@ -58,7 +82,7 @@ The webservice and dataprovider codes are completely independent in each other. 
 
 
 
-Better documentation will follow soon!
+More documentation will follow soon!
 
 
 
