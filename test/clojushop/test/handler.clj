@@ -5,7 +5,7 @@
   (:require [cheshire.core :require :all]
             [monger.collection :as mc]
             [clojushop.status-codes :as status]
-            [clojushop.dataprovider :as dataprovider]
+            [clojushop.mongo-data-provider :as mdp]
             [clojushop.logger :as log]
             [clojushop.paths :as paths]
             [clojushop.http-constants :as chttp]
@@ -47,10 +47,7 @@
 
 
 (defn test-valid-product [product]
-  ;todo check why dataprovider/Product doesn't work
-  ;note this function will not work anyway since key names don't match
-  ;(is (match-keys? product (get-record-field-keys dataprovider/Product)))
-
+  ;TODO review this
   (let [id (:id product)
         name (:name product)
         description (:description product)
@@ -238,11 +235,11 @@
    documents))
 
 (defn clear-db-products []
-  (mc/remove dataprovider/coll-products)
+  (mc/remove mdp/coll-products)
   )
 
 (defn clear-db-users []
-  (mc/remove dataprovider/coll-users)
+  (mc/remove mdp/coll-users)
   )
 
 (defn clear-db []
@@ -254,7 +251,7 @@
   (clear-db-users) ;TODO remove from here
 
   (doseq [product (add-test-mongo-ids dummy-products)]
-        (mc/insert dataprovider/coll-products product)))
+        (mc/insert mdp/coll-products product)))
 
 
 
@@ -979,7 +976,6 @@
   ;preconditions for tests ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   (clear-db)
   (add-test-products)
-  ;(dataprovider/fill-db-with-test-data)
 
   ;TODO remove? is this working? this should return not auth
   (let [response (req-get paths/user-get {:na "user1"})]

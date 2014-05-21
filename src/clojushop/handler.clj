@@ -3,7 +3,6 @@
   (:use ring.middleware.json-params)
   (:require [compojure.handler :as handler]
             [compojure.route :as route]
-            [clojushop.dataprovider :as dataprovider]
             [ring.middleware.json :as middleware]
             [clojure.data.json :as json]
             [ring.middleware.nested-params :as nested-params]
@@ -22,7 +21,15 @@
             [clojushop.logger :as log]
             [clojushop.paths :as paths]
             [clojushop.http-constants :as chttp]
-            ))
+            [clojushop.data-provider :as dp]
+            [clojushop.mongo-data-provider :as mdp]
+            )
+
+  )
+
+(import clojushop.mongo_data_provider.MongoDataProvider)
+
+(def dp (dp/init (mdp/MongoDataProvider. "127.0.0.1" 27017)))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -100,7 +107,7 @@ and then wrap this with a new key wrapper-key"
     (if (empty? params)
       (resp/response {:status status/wrong-params})
       
-      (let [user (:data (dataprovider/user-get (:username params)))]
+      (let [user (:data (dp/user-get dp (:username params)))]
         (if (= (:pw user) (:password params)) ;validate password
           {:body {:status status/success} :session {:username (:username params)}}
           (resp/response {:status status/login-failed}))))))
@@ -124,54 +131,54 @@ and then wrap this with a new key wrapper-key"
 
 (ws-handler products-get [params]
   (val/validate-products-get params (fn [] (wrap-data-provider-op 
-                                                     (dataprovider/products-get params)
+                                                     (dp/products-get dp params)
                                                      (map-db-result-data-to-ws mp/product-ws :products)))))
 (ws-handler product-add [params]
-  (val/validate-product-add params #(dataprovider/product-add params)))
+  (val/validate-product-add params #(dp/product-add dp params)))
 
 (ws-handler product-remove [params]
-  (val/validate-product-remove params #(dataprovider/product-remove params)))
+  (val/validate-product-remove params #(dp/product-remove dp params)))
 
 (ws-handler product-edit [params]
-  (val/validate-product-edit params #(dataprovider/product-edit params)))
+  (val/validate-product-edit params #(dp/product-edit dp params)))
 
 
 
 (ws-handler cart-add [params]
-  (val/validate-cart-add params #(let [result (dataprovider/cart-add params)]
+  (val/validate-cart-add params #(let [result (dp/cart-add dp params)]
                                         ;TODO examine results
                                         (resp-status-success))))
 
 (ws-handler cart-remove [params]
-  (val/validate-cart-remove params #(dataprovider/cart-remove params)))
+  (val/validate-cart-remove params #(dp/cart-remove dp params)))
 
 ;NOTE when user id doesn't exist we just return empty cart
 (ws-handler cart-get [params]
   (val/validate-cart-get params (fn [] (wrap-data-provider-op 
-                                        (dataprovider/cart-get params)
+                                        (dp/cart-get dp params)
                                         (map-db-result-data-to-ws mp/cart-item-db-to-ws :cart)))))
 
 (ws-handler cart-quantity [params]
             ;TODO use deconstruction to pass parameters
-            (val/validate-cart-quantity params #(dataprovider/cart-quantity params)))
+            (val/validate-cart-quantity params #(dp/cart-quantity dp params)))
 
 
 
 (ws-handler user-get [params]
   (val/validate-user-get params (fn [] (wrap-data-provider-op 
-                                        (dataprovider/user-get params)
+                                        (dp/user-get dp params)
                                         (map-db-result-data-to-ws mp/user-db-to-ws :user)))))
 
 (defn user-remove [params]
   (val/validate-user-remove params #(do
-                                       (dataprovider/user-remove params)
+                                       (dp/user-remove dp params)
                                        logout-response)))
 
 (ws-handler user-register [params]
-  (val/validate-user-register params #(dataprovider/user-register params)))
+  (val/validate-user-register params #(dp/user-register dp params)))
 
 (ws-handler user-edit [params]
-  (val/validate-user-edit params #(dataprovider/user-edit params)))
+  (val/validate-user-edit params #(dp/user-edit dp params)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;routes
@@ -222,7 +229,6 @@ and then wrap this with a new key wrapper-key"
       response
       )
     ))
-
 
 (def app
   (->
