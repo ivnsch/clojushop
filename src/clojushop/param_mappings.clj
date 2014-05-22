@@ -34,7 +34,7 @@
 (def product-ws-keys
   {:name :name
    :descr :description
-   :picture :pic-url
+   :pic-url :picture
    :price :price
    :seller :seller
    }
