@@ -85,7 +85,7 @@ Note that the api is in early development. This is just to give an overview of w
 
 ##### Status codes
 
-All webservice responses have a status flag. Possible codes:
+All api responses have a status flag. Possible codes:
 
 Code  | Meaning
 ------------- | -------------
@@ -110,7 +110,7 @@ Code  | Meaning
 4  | Not found
 5  | Database internal error
 
-The webservice and dataprovider codes are completely independent in each other. The api handler (https://github.com/i-schuetz/clojushop/blob/master/src/clojushop/handler.clj) decides how to handle database result codes.
+The api and dataprovider status codes are independent of each other. The api handler (https://github.com/i-schuetz/clojushop/blob/master/src/clojushop/handler.clj) decides how to handle database result codes. Usually a map will be used to determine api code.
 
 
 
