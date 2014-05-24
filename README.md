@@ -59,6 +59,30 @@ The unit tests in https://github.com/i-schuetz/clojushop/blob/master/test/clojus
 https://github.com/i-schuetz/clojushop_client_ios
 
 
+
+
+##### Api
+
+Path  | Request type  | Authenticated  | Description  | Params
+------------- | ------------- | ------------- | ------------- | -------------
+/products  |  GET  | No |  Gets products list  | st: Page start, sz: Page size
+/products/add  | POST | Yes  | Adds a product (current user) |  na: name, des: description, img: image, pr: price, se: seller
+/products/edit  | POST | Yes | Edits a product (current user) | na: name, des: description, img: image, pr: price, se: seller (all optional, but at least 1 required)
+/products/remove  | POST | Yes | Removes a product (current user) | id: product id
+/cart  | GET | Yes | Gets cart (current user) |  
+/cart/add  | POST | Yes | Adds a product to cart | id: product id 
+/cart/remove  | POST | Yes | Removes a product from cart | id: product id 
+/cart/quantity | POST | Yes | Sets the quantity of cart item (upsert) | id: product id, qt: quantity 
+/user | GET | Yes | Gets current user | 
+/user/register | POST | No | Registers a user | na: name, em: email, pw: password 
+/user/edit | POST | Yes | Edits current user | na: name, em: email, pw: password (all optional, but at least 1 required)
+/user/login | POST | No | Logs in a user | username: name, password: password 
+/user/logout | GET | Yes | Logs out current user | 
+/user/remove | GET | Yes | Removes current user |
+
+Note that the api is in early development. This is just to give an overview of what the api is supposed to do. There are many of functions, checks, parameters, etc. that are not implemented yet. Current parameters are likely to change soon / this list may be outdated.
+
+
 ##### Status codes
 
 All webservice responses have a status flag. Possible codes:
