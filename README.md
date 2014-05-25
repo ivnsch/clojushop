@@ -120,3 +120,10 @@ More documentation will follow soon!
 
 
 Operations list: Get products (paginated), add product, remove product, edit product, register, login, logout, get user details, remove user, edit user, get cart, add to cart, remove from cart, change quantity in cart.
+
+
+#### License
+
+Copyright (C) 2014 Ivan Schütz
+
+Release under Apache License v2. See LICENSE.txt for the full license, at the top level of this repository.
