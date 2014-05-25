@@ -119,8 +119,6 @@ More documentation will follow soon!
 
 
 
-Operations list: Get products (paginated), add product, remove product, edit product, register, login, logout, get user details, remove user, edit user, get cart, add to cart, remove from cart, change quantity in cart.
-
 
 #### License
 
