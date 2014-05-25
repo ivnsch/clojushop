@@ -54,7 +54,7 @@ lein test clojushop.test.handler
 The unit tests in https://github.com/i-schuetz/clojushop/blob/master/test/clojushop/test/handler.clj do request calls and response processing like a normal client, thus can also help with further understanding about how to use the api.
 
 
-##### Example client app:
+##### Example client app (iOS):
 
 https://github.com/i-schuetz/clojushop_client_ios
 
