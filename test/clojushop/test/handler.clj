@@ -48,11 +48,11 @@
 
 (defn test-valid-product [product]
   (let [id (:id product)
-        name (:name product)
-        description (:description product)
-        image (:picture product)
-        price (:price product)
-        seller (:seller product)]
+        name (:na product)
+        description (:des product)
+        image (:img product)
+        price (:pr product)
+        seller (:se product)]
 
     (is (not (empty? id)))
     (is (not (empty? name)))
@@ -210,10 +210,10 @@
 
 (def dummy-products
   [
-   {:na "Cookies" :des "Good tasting!" :img "http://ecx.images-amazon.com/images/I/81im-ztcK8L._SY606_.jpg" :pr "2" :se "ischuetz"}
+   {:na "Cookies" :des "Tasty!" :img "http://ecx.images-amazon.com/images/I/81im-ztcK8L._SY606_.jpg" :pr "2" :se "ischuetz"}
    {:na "Blueberries" :des "Healthy!" :img "http://1.bp.blogspot.com/-sumate-5zQE/Tc6B5LSkqzI/AAAAAAAAABQ/Uq0NBhxB0aQ/s1600/AA026339.png" :pr "3" :se "betty123"}
-   {:na "Meat" :des "The best!" :img "http://0.static.wix.com/media/01c68a_730785e499ab4ce8c43e26ab335a876b.jpg_1024" :pr "7" :se "a-fisher"}
-   {:na "Juice" :des "100% fruit!" :img "http://ecx.images-amazon.com/images/I/71gBbObPBxL._SY606_.jpg" :pr "4" :se "ischuetz"}
+   {:na "Meat" :des "Bloody!" :img "http://0.static.wix.com/media/01c68a_730785e499ab4ce8c43e26ab335a876b.jpg_1024" :pr "7" :se "a-fisher"}
+   {:na "Juice" :des "Juicy!" :img "http://ecx.images-amazon.com/images/I/71gBbObPBxL._SY606_.jpg" :pr "4" :se "ischuetz"}
    ])
 
 (defn index-to-db-id [index]
@@ -243,7 +243,7 @@
 
 (defn add-test-products []
   (clear-db-products) ;TODO remove from here
-  (clear-db-users) ;TODO remove from here
+;  (clear-db-users) ;TODO remove from here
 
   (doseq [product (add-test-mongo-ids dummy-products)]
         (mc/insert mdp/coll-products product)))
@@ -254,7 +254,9 @@
 
 ;TODO remove
 (defn register-user1 []
-  (app (request :post paths/user-register {:na "user1" :em "user2@foo.com" :pw "test123"})))
+  (let [result (app (request :post paths/user-register {:una "user1" :uem "user2@foo.com" :upw "test123"}))]
+    (println "resgistered rersult: " result))
+  )
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -273,6 +275,7 @@
       (test-success-body body)))
 
   (log/test-name "product-get, authorized, after add one product")
+
   (let [response (req-get paths/products-get {:st 0 :sz 2})]
     (log/response response)
 
@@ -328,7 +331,7 @@
       (test-success-body body)
 
       (is (= (count (:products body)) 1))
-      (is (= (:na ((:products body) 0)) (:name (dummy-products 0)))) ;check sorting is correct
+      (is (= (:na ((:products body) 0)) (:na (dummy-products 0)))) ;check sorting is correct
       
       (for [product (body :products)]
         (test-valid-product product))
@@ -397,9 +400,9 @@
 
                     (let [product ((:products body) 0)]
                       (is (= (:id product) product-id))
-                      (is (= (:name product) new-name))
-                      (is (= (:description product) new-desc))
-                      (is (= (:price product) new-price))
+                      (is (= (:na product) new-name))
+                      (is (= (:des product) new-desc))
+                      (is (= (:pr product) new-price))
                       )))
                 )
               
@@ -456,7 +459,7 @@
        ;register and login a user
        (register-user1) ;TODO add the user in fill-db-with-test-data
        (log/test-name "loggin in the user...")
-       (let [response (req-post paths/user-login {:username "user1" :password "test123"})
+       (let [response (req-post paths/user-login {:una "user1" :upw "test123"})
              auth-token (get-auth-token response)]
 
          (test-products-logged-in auth-token))
@@ -487,14 +490,14 @@
 
         (let [user (:user body)]
 
-          (is (contains? user :na))
-          (is (contains? user :em))
-          (is (not (contains? user :pw))))))
+          (is (contains? user :una))
+          (is (contains? user :uem))
+          (is (not (contains? user :upw))))))
 
   (log/test-name "editing user email, authenticated")
   (let [
         new-email "new-email@bla.com"
-        response (req-post-auth paths/user-edit {:em new-email} token)]
+        response (req-post-auth paths/user-edit {:uem new-email} token)]
     (log/response response)
 
     (test-valid-response-with-body response)
@@ -520,11 +523,11 @@
 
             (let [user (:user body)]
 
-              (is (contains? user :na))
-              (is (contains? user :em))
-              (is (not (contains? user :pw)))
+              (is (contains? user :una))
+              (is (contains? user :uem))
+              (is (not (contains? user :upw)))
               
-              (is (= (:em user) new-email)))))))
+              (is (= (:uem user) new-email)))))))
 
   ;TODO test edit password
   
@@ -574,7 +577,7 @@
 
   
   (log/info "logging in again...")
-  (let [response (req-post paths/user-login {:username "user1" :password "test123"})
+  (let [response (req-post paths/user-login {:una "user1" :upw "test123"})
         auth-token (get-auth-token response)]
 
     (log/debug (str "response of login: " response))
@@ -630,7 +633,7 @@
     )
     
     (log/test-name "user-register wrong params")
-    (let [response (req-post paths/user-register (clojure.data.json/write-str {:na "aaaaaaa"}))]
+    (let [response (req-post paths/user-register (clojure.data.json/write-str {:una "aaaaaaa"}))]
       (log/response response)
 
       (test-valid-response response)
@@ -643,7 +646,7 @@
      )
 
     (log/test-name "registering user...")
-    (let [response (req-post paths/user-register {:na "user1" :em "user1@foo.com" :pw "test123"})]
+    (let [response (req-post paths/user-register {:una "user1" :uem "user1@foo.com" :upw "test123"})]
       (log/response response)
 
       (test-valid-response-with-body response)
@@ -655,7 +658,7 @@
         ))
 
     (log/test-name "registering a new user with same name")
-    (let [response (req-post paths/user-register {:na "user1" :em "user2@foo.com" :pw "test123"})]
+    (let [response (req-post paths/user-register {:una "user1" :uem "user2@foo.com" :upw "test123"})]
       
       (log/response response)
 
@@ -667,7 +670,7 @@
         (test-body-status body status/user-already-exists)))
 
     (log/test-name "getting user we registered, not authenticated")
-    (let [response (req-get paths/user-get {:na "user1"})]
+    (let [response (req-get paths/user-get)]
 
       (log/response response)
       
@@ -679,7 +682,7 @@
         (test-body-status body status/not-auth)))
 
     (log/test-name "login, with user we just registered")
-    (let [response (req-post paths/user-login {:username "user1" :password "test123"})]
+    (let [response (req-post paths/user-login {:una "user1" :upw "test123"})]
 
             (log/response response)
       
@@ -976,7 +979,7 @@
   (add-test-products)
 
   ;TODO remove? is this working? this should return not auth
-  (let [response (req-get paths/user-get {:na "user1"})]
+  (let [response (req-get paths/user-get)]
   
      (let [body (cheshire.core/parse-string (:body response) true)]
        (def test-user (:user body))))
@@ -1007,7 +1010,7 @@
        ;register and login a user
        (register-user1) ;TODO add the user in fill-db-with-test-data
        (log/test-name "loggin in the user...")
-       (let [response (req-post paths/user-login {:username "user1" :password "test123"})
+       (let [response (req-post paths/user-login {:una "user1" :upw "test123"})
              auth-token (get-auth-token response)]
 
          (test-cart-logged-in auth-token))

@@ -32,7 +32,7 @@
 
 (defn cart-insert [user-name product-id qt]
     (let [result
-          (db-write-handler #(mc/update coll-users {:na user-name}
+          (db-write-handler #(mc/update coll-users {:una user-name}
                                         {$push {:cart {:id product-id :qt qt}}}))]
 
       result
@@ -61,7 +61,7 @@
   (products-get [this params]
   (let [start (Integer. (:st params))
         size (Integer. (:sz params))]
-    
+
     (dp/wrap-read-result dp-status/success
                       (into [] (mq/with-collection coll-products
                                  (mq/find {})
@@ -103,11 +103,11 @@
                                         ;currently it will be inserted and get-cart will deliver these items with
                                         ;nil fields
 
-    (let [user-name (:username params)
+    (let [user-name (:una params)
           product-id (:pid params)
           
           item (mq/with-collection coll-users
-                 (mq/find {:na user-name "cart.id" product-id})
+                 (mq/find {:una user-name "cart.id" product-id})
                  )]
 
       (if (empty? item)
@@ -115,64 +115,64 @@
           (cart-insert user-name product-id 1))
         
         (let [current-qt (:qt (nth (:cart (into {} item)) 0)) ;TODO
-              result (db-write-handler #(mc/update coll-users {:na user-name "cart.id" product-id}
+              result (db-write-handler #(mc/update coll-users {:una user-name "cart.id" product-id}
                                                    {$set {"cart.$.qt" (+ current-qt 1)}}))]
           result
           ))))
 
 
   (cart-remove [this params]
-    (let [user-name (:username params)
+    (let [user-name (:una params)
           product-id (:pid params)]
-      (db-write-handler #(mc/update coll-users {:na user-name}
+      (db-write-handler #(mc/update coll-users {:una user-name}
                                     {$pull {:cart {:id product-id}}}))))
 
 
   (cart-get [this params]
-    (let [user-name (:username params)]
+    (let [user-name (:una params)]
       
-                                        ;get cart items
+      ;get cart items
       (let [result 
             (mq/with-collection coll-users
-              (mq/find {:na user-name})
-                                        ;TODO projection - get only cart and remove map access bellow
+              (mq/find {:una user-name})
+              ;TODO projection - get only cart and remove map access bellow
               )
             items (:cart (into {} result))
             items-ids (into [] (map #(:id %) items))]
         
-                                        ;get product for cart items ids
+        ;get product for cart items ids
         (let [result-products
               (mq/with-collection coll-products
                 (mq/find {:_id {$in items-ids}}))
               products (into [] result-products)
               ]
 
-                                        ;merge cart items with products
-                                        ;TODO better way? also, avoid into{} ?
+          ;merge cart items with products
+          ;TODO better way? also, avoid into{} ?
           (dp/wrap-read-result dp-status/success 
                             (let [items-full 
                                   (into [] (map
                                             (fn [item]
                                               (select-keys
                                                (merge item
-                                                      (into {} (filter (fn [product] (= (:id product) (:pid item))) products))
+                                                      (into {} (filter (fn [product] (= (:_id product) (:id item))) products))
                                                       ) [:id :na :des :img :pr :se :qt])) items))]
 
                               items-full))))))
 
   (cart-quantity [this params]
     (let [
-          user-name (:username params)
+          user-name (:una params)
           product-id (:pid params)
           quantity (:qt params)
           item (mq/with-collection coll-users
-                 (mq/find {:na user-name "cart.id" product-id})
+                 (mq/find {:una user-name "cart.id" product-id})
                  )]
 
       (if (empty? item)
         (do
           (cart-insert user-name product-id quantity))
-        (let [result (db-write-handler #(mc/update coll-users {:na user-name "cart.id" product-id}
+        (let [result (db-write-handler #(mc/update coll-users {:una user-name "cart.id" product-id}
                                                    {$set {"cart.$.qt" quantity}}))]
           result
           ))))
@@ -182,9 +182,10 @@
   ;users
 
   (user-get [this params]
-    (let [user-name (:na params)
+
+    (let [user-name (:una params)
           res (mq/with-collection coll-users
-                (mq/find user-name)
+                (mq/find {:una user-name})
                 )]
 
       (dp/wrap-read-result
@@ -198,10 +199,10 @@
        )))
 
   (user-register [this params]
-    (let [user-name (:na params)
+    (let [user-name (:una params)
           res
           (mq/with-collection coll-users
-            (mq/find {:na user-name})
+            (mq/find {:una user-name})
             )]
 
       (if (empty? res)
@@ -211,17 +212,17 @@
         (dp/error-result dp-status/user-already-exists))))
 
   (user-remove [this params]
-    (let [user-name (:username params)]
-      (db-write-handler #(mc/remove coll-users {:na user-name}))))
+    (let [user-name (:una params)]
+      (db-write-handler #(mc/remove coll-users {:una user-name}))))
 
 
   (user-edit [this params]
     (let [id (:id params)]
-      (let [editable-props [:em :pw]
+      (let [editable-props [:uem :upw]
             edit-params (select-keys params editable-props)
             editmap (mp/user-db edit-params)
             to-update {$set editmap}
             ]
-        (db-write-handler #(mc/update coll-users {:na (:username params)} to-update))
+        (db-write-handler #(mc/update coll-users {:una (:una params)} to-update))
         )
       )))

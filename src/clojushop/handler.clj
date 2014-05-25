@@ -107,9 +107,10 @@ and then wrap this with a new key wrapper-key"
     (if (empty? params)
       (resp/response {:status status/wrong-params})
       
-      (let [user (:data (dp/user-get dp (:username params)))]
-        (if (= (:pw user) (:password params)) ;validate password
-          {:body {:status status/success} :session {:username (:username params)}}
+      (let [user (:data (dp/user-get dp params))]
+
+        (if (and (not (nil? user)) (= (:upw user) (:upw params))) ;validate password
+          {:body {:status status/success} :session {:una (:una params)}}
           (resp/response {:status status/login-failed}))))))
 
 (def logout-response
@@ -120,11 +121,11 @@ and then wrap this with a new key wrapper-key"
 
 (defn wrap-authentication [handler]
   (fn [request]
-    (let [username (:username (:session request))]
+    (let [username (:una (:session request))]
       (if (nil? username)
         (resp/response {:status status/not-auth})
         (handler (merge request
-                        {:params (merge (:params request) {:username username})}))))))
+                        {:params (merge (:params request) {:una username})}))))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;handlers

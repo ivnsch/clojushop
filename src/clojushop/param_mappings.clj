@@ -32,13 +32,7 @@
    :qt :qt})
 
 (def product-ws-keys
-  {:name :name
-   :descr :description
-   :pic-url :picture
-   :price :price
-   :seller :seller
-   }
-  )
+  [:na :des :img :pr :se])
 
 
 (defn cart-item-db-to-ws [item]
@@ -54,8 +48,8 @@
 ;TODO
 (defn user-db-to-ws [user]
   {:id (str (:_id user))
-   :na (:na user)
-   :em (:em user)
+   :una (:una user)
+   :uem (:uem user)
    }
   )
 
@@ -64,12 +58,8 @@
 ;ws -> db
 
 (def product-db-keys
-  {:na :name
-   :des :descr
-   :img :pic-url
-   :pr :price
-   :username :seller
-   })
+  [:na :des :img :pr :se]
+  )
 
 ;TODO merge the username from params in prod and pass only prod?
 (defn product-catalog-db [product]
@@ -78,7 +68,7 @@
 (defn product-catalog-db-with-id [product]
   (assoc-db-id (product-catalog-db product)))
 
-(def user-db-keys [:na :em :pw])
+(def user-db-keys [:una :uem :upw])
 
 (defn user-db [user-ws]
   (utils/filter-map-keys user-db-keys user-ws))

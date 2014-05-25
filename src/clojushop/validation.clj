@@ -88,44 +88,44 @@
 (def validations-user-register
 
   (val/validation-set
-            (val-empty :na)
-            (val-empty :em)
-            (val-empty :pw)
+            (val-empty :una)
+            (val-empty :uem)
+            (val-empty :upw)
 
-            (val-white-sp :na)
-            (val-white-sp :em)
-            (val-white-sp :pw)            
+            (val-white-sp :una)
+            (val-white-sp :uem)
+            (val-white-sp :upw)            
             
-            (val-min-max-length :na 1 20)
-            (val-min-max-length :em 1 30)
-            (val-min-max-length :pw 1 15)
+            (val-min-max-length :una 1 20)
+            (val-min-max-length :uem 1 30)
+            (val-min-max-length :upw 1 15)
 
             ;; (val-email :em) TODO not working with unit test emails
             ))
 
 (def validations-user-remove
   (val/validation-set
-            (val-empty :username)
+            (val-empty :una)
 
-            (val-white-sp :username)
+            (val-white-sp :una)
             
-            (val-min-max-length :username 1 20)
+            (val-min-max-length :una 1 20)
             ))
 
 (def validations-cart-get
   (val/validation-set
-            (val-empty :username)
+            (val-empty :una)
 
-            (val-min-max-length :username 1 20)            
-            ;(val-db-id :username)
+            (val-min-max-length :una 1 20)            
+            ;(val-db-id :una)
             ))
 
 (def validations-cart-add
   (val/validation-set
-            (val-empty :username)
+            (val-empty :una)
             (val-empty :pid)
 
-            (val-min-max-length :username 1 20)            
+            (val-min-max-length :una 1 20)            
             (val-db-id :pid)            
             ))
 
@@ -141,19 +141,19 @@
 
 (def validations-user-get
   (val/validation-set
-            (val-empty :username)
+            ;(val-empty :una)
 
-            (val-white-sp :username)
+            ;(val-white-sp :una)
             
-            (val-min-max-length :username 1 20)
+            ;(val-min-max-length :una 1 20)
             ))
 
 (def validations-user-add
   (val/validation-set
-            (val-empty :username)
+            (val-empty :una)
             (val-empty :pid)
 
-            (val-min-max-length :username 1 20)            
+            (val-min-max-length :una 1 20)            
             (val-db-id :pid)            
             ))
 
