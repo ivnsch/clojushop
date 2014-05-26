@@ -118,7 +118,7 @@ When products are added to the database, the images have to be grouped in resolu
 
 Best explained with an example: Products are used in a list and a detailed view. List uses small images. Detail view uses big images. For testing we will use only 2 resolution categories - one will stand for "low" and the other for "high".
 
-The img element of a product in the database would look like this (this implementation will be improved to avoid repeating the base path):
+The img field of a product in the database would look like this (this implementation will be improved to avoid repeating the base path):
 
 ```
 :img {
@@ -131,20 +131,20 @@ The img element of a product in the database would look like this (this implemen
 }
 ```
 
-Here :pl stands for product-list and :pd for product-details. :1 is our low res category and :2 is high res.
+Here :pl stands for product-list and :pd for product-details. :1 is our low res category and :2 is high res (in a serious application we would use much more categories, e.g. specific for iPhone retina, Android (ranges), tablets, etc).
 
 In total, we have 4 images. 2 use cases (list and details), and 2 available resolutions for each use case.
 
-When we make a request to get items that contain images, we send the screen size as "scsz" parameter. Example:
+When the client makes a request to get items that contain images, it must send the screen size as "scsz" parameter. Example:
 "scsz":"640x960"
 
-In the function get-res-cat [screen-size] in https://github.com/i-schuetz/clojushop/blob/master/src/clojushop/handler.clj, we determine which resolution category we want to map this screen size to. An oversimplified implementation for our 2 available categories could look like this:
+In the function get-res-cat [screen-size] in our handler  (https://github.com/i-schuetz/clojushop/blob/master/src/clojushop/handler.clj), we map this screen size to a resolution category. The algorithm to do this can be anything - for demostrative purposes, we use this:
 
     (if (< (Integer. width) 500) :1 :2)
     
 This is, if the screen width is less than 500px we map this to resolution category 1 and if it's bigger to 2.
 
-The items will then be filtered accordingly from the database, such that the client gets only images suitable for their screensize. The image element of product in response would look like this:
+The items will then be filtered accordingly, such that the client gets only images suitable for their screensize. The image field of product in response would look like this:
 
 ```
 "img":{"pd":"http://ivanschuetz.com/img/cs/product_details/r2/blueberries.png","pl":"http://ivanschuetz.com/img/cs/product_list/r2/blueberries.png"}
