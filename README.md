@@ -112,9 +112,49 @@ Code  | Meaning
 
 The api and dataprovider status codes are independent of each other. The api handler (https://github.com/i-schuetz/clojushop/blob/master/src/clojushop/handler.clj) decides how to handle database result codes. Usually a map will be used to determine api code.
 
+##### Image resolutions
+
+When products are added to the database, the images have to be grouped in resolution categories. A resolution category is a simple numeric identifier. The meaning of the identifier is not fixed, and it depends where and how it's used.
+
+Best explained with an example: Products are used in a list and a detailed view. List uses small images. Detail view uses big images. For testing we will use only 2 resolution categories - one will stand for "low" and the other for "high".
+
+The img element of a product in the database would look like this (this implementation will be improved to avoid repeating the base path):
+
+```
+:img {
+          :pl {
+            :1 "http://ivanschuetz.com/img/cs/product_list/r1/blueberries.png" 
+            :2 "http://ivanschuetz.com/img/cs/product_list/r2/blueberries.png"}
+          :pd {
+            :1 "http://ivanschuetz.com/img/cs/product_details/r1/blueberries.png" 
+            :2 "http://ivanschuetz.com/img/cs/product_details/r2/blueberries.png"}
+}
+```
+
+Here :pl stands for product-list and :pd for product-details. :1 is our low res category and :2 is high res.
+
+In total, we have 4 images. 2 use cases (list and details), and 2 available resolutions for each use case.
+
+When we make a request to get items that contain images, we send the screen size as "scsz" parameter. Example:
+"scsz":"640x960"
+
+In the function get-res-cat [screen-size] in https://github.com/i-schuetz/clojushop/blob/master/src/clojushop/handler.clj, we determine which resolution category we want to map this screen size to. An oversimplified implementation for our 2 available categories could look like this:
+
+    (if (< (Integer. width) 500) :1 :2)
+    
+This is, if the screen width is less than 500px we map this to resolution category 1 and if it's bigger to 2.
+
+The items will then be filtered accordingly from the database, such that the client gets only images suitable for their screensize. The image element of product in response would look like this:
+
+```
+"img":{"pd":"http://ivanschuetz.com/img/cs/product_details/r2/blueberries.png","pl":"http://ivanschuetz.com/img/cs/product_list/r2/blueberries.png"}
+```
 
 
-More documentation will follow soon!
+This is a very flexible implementation, since the client doesn't have to be modified when new resolutions are supported, and server can add arbitrary categories or new logic to determine which images fit best a certain screen size. Client only tells server e.g. "I want the images for the products list, and my screen size is 640x960", and uses whatever images the server delivers. This also works with orientation change, without additional changes - the client sends what currently is width and height and the server determines what fits best. It is not necessary to add additional identifiers for orientation or device type. Yet, orientation change opens the need for an improvement, namely that the client should not have to repeat the request only to get the images for the new orientation. This will probably be solved by calculating both resolutions categories interchanging width and height and send the client both images. In this case the request would keep the same, but the processing of the response would have to be adjusted.
+
+
+
 
 
 
