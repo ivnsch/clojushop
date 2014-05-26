@@ -127,15 +127,71 @@ and then wrap this with a new key wrapper-key"
         (handler (merge request
                         {:params (merge (:params request) {:una username})}))))))
 
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;image
+
+(defn get-res-cat [screen-size]
+  "Get resolution category identifier for screen size"
+  (let [dims (clojure.string/split screen-size #"x")
+        width (dims 0)
+        height (dims 1)]
+
+    ;replaceme implementation... we use 2 categories and a very simple algorithm - if
+    ;screen width is less than 300 px we return category 1
+    ;otherwise 2. The low res pictures turned to be a bit too low,
+    ;this is why we the limit is currently only 300 px
+    (if (< (Integer. width) 300) :1 :2)))
+
+(defn replace-screen-with-res-cat [params]
+  (assoc
+      (into {} (remove (fn [[k v]] (= k :scsz)) params)) ;remove screen size
+    :res (get-res-cat (:scsz params)))) ;add resolution category
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;adapted from ring https://github.com/mmcgrana/ring/blob/master/ring-core/src/ring/middleware/keyword_params.clj
+;to allow keyword syntax starting with numbers
+;TODO put middleware in other namespace, or add letter to keys and
+;use rings middleware
+
+(defn- keyword-syntax? [s]
+  (re-matches #"[A-Za-z0-9*+!_?-]*" s))
+
+(defn- keyify-params [target]
+  (cond
+    (map? target)
+      (into {}
+        (for [[k v] target]
+          [(if (and (string? k) (keyword-syntax? k))
+             (keyword k)
+             k)
+           (keyify-params v)]))
+    (vector? target)
+      (vec (map keyify-params target))
+    :else
+      target))
+
+(defn wrap-keyword-params [handler]
+  (fn [req] (handler (update-in req [:params] keyify-params))))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;handlers
 
+
+
 (ws-handler products-get [params]
-  (val/validate-products-get params (fn [] (wrap-data-provider-op 
-                                                     (dp/products-get dp params)
-                                                     (map-db-result-data-to-ws mp/product-ws :products)))))
+
+  (val/validate-products-get params
+                             (fn []
+                               (wrap-data-provider-op 
+                                (dp/products-get dp params)
+                                (map-db-result-data-to-ws
+                                 (partial mp/product-ws (get-res-cat (:scsz params)))
+                                 :products)))))
+
 (ws-handler product-add [params]
-  (val/validate-product-add params #(dp/product-add dp params)))
+            (val/validate-product-add params #(dp/product-add dp params)))
 
 (ws-handler product-remove [params]
   (val/validate-product-remove params #(dp/product-remove dp params)))
@@ -157,7 +213,9 @@ and then wrap this with a new key wrapper-key"
 (ws-handler cart-get [params]
   (val/validate-cart-get params (fn [] (wrap-data-provider-op 
                                         (dp/cart-get dp params)
-                                        (map-db-result-data-to-ws mp/cart-item-db-to-ws :cart)))))
+                                        (map-db-result-data-to-ws
+                                         (partial mp/cart-item-db-to-ws (get-res-cat (:scsz params)))
+                                         :cart)))))
 
 (ws-handler cart-quantity [params]
             ;TODO use deconstruction to pass parameters
@@ -242,7 +300,8 @@ and then wrap this with a new key wrapper-key"
       
       ;(logging-middleware-req)
 
-      (keyword-params/wrap-keyword-params)
+      (wrap-keyword-params)
+      
       (middleware/wrap-json-body)
       (middleware/wrap-json-params)
       (middleware/wrap-json-response)

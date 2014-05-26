@@ -44,9 +44,11 @@
   (val/validation-set
    (val-empty :st)
    (val-empty :sz)
+   (val-empty :scsz)
    
    (val-min-max-length :st 1 20)
    (val-min-max-length :sz 1 20)
+   (val-min-max-length :scsz 1 20)
 
    (val-is-int :st)
    (val-is-int :sz)
@@ -58,11 +60,25 @@
             (val-empty :des)
             (val-empty :img)            
             (val-empty :pr)
-            (val-empty :se)            
+            (val-empty :se)
+
+            ;TODO
+            ;; (val-empty [:img :pd])
+            ;; (val-empty [:img :pl])
+            
+            ;; (val-empty [:img :pl :1])
+            ;; (val-empty [:img :pl :1])            
+            ;; (val-empty [:img :pd :2])            
+            ;; (val-empty [:img :pd :2])
             
             (val-min-max-length :na 1 20)
             (val-min-max-length :des 1 200)
-            (val-min-max-length :img 1 100)
+
+            ;; (val-min-max-length [:img :pl :1] 1 100)
+            ;; (val-min-max-length [:img :pl :2] 1 100)
+            ;; (val-min-max-length [:img :pd :1] 1 100)
+            ;; (val-min-max-length [:img :pd :2] 1 100)            
+
             (val-min-max-length :pr 1 20)
             (val-min-max-length :se 1 100)
 
@@ -118,6 +134,8 @@
 
             (val-min-max-length :una 1 20)            
             ;(val-db-id :una)
+
+            ;TODO reuse validations from scsz from product
             ))
 
 (def validations-cart-add

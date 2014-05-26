@@ -50,17 +50,26 @@
   (let [id (:id product)
         name (:na product)
         description (:des product)
-        image (:img product)
+        images (:img product)
         price (:pr product)
         seller (:se product)]
 
     (is (not (empty? id)))
     (is (not (empty? name)))
     (is (not (empty? description)))
-    (is (not (empty? image)))
+    (is (not (empty? images)))
     (is (not (empty? price)))
     (is (not (empty? seller)))
 
+    (is (map? images))
+    (is (not (empty? (:pl images))))
+    (is (not (empty? (:pd images))))
+
+    ;check that we get only 1 resolution, not map
+    (is (string? (:pl images)))
+    (is (string? (:pd images)))
+
+    
     ;; (is (< 0 (count id) 10))
     ;; (is (< 0 (count name) 30))
     ;; (is (and (>= (count description) 0) (< (count description) 100)))
@@ -208,12 +217,29 @@
 
 ;test data ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+;TODO avoid img path redundancy
 (def dummy-products
   [
-   {:na "Cookies" :des "Tasty!" :img "http://ecx.images-amazon.com/images/I/81im-ztcK8L._SY606_.jpg" :pr "2" :se "ischuetz"}
-   {:na "Blueberries" :des "Healthy!" :img "http://1.bp.blogspot.com/-sumate-5zQE/Tc6B5LSkqzI/AAAAAAAAABQ/Uq0NBhxB0aQ/s1600/AA026339.png" :pr "3" :se "betty123"}
-   {:na "Meat" :des "Bloody!" :img "http://0.static.wix.com/media/01c68a_730785e499ab4ce8c43e26ab335a876b.jpg_1024" :pr "7" :se "a-fisher"}
-   {:na "Juice" :des "Juicy!" :img "http://ecx.images-amazon.com/images/I/71gBbObPBxL._SY606_.jpg" :pr "4" :se "ischuetz"}
+   {:na "Cookies" :des "Tasty!"
+    :img {
+          :pl {:1 "http://ivanschuetz.com/img/cs/product_list/r1/cookies.jpg" :2 "http://ivanschuetz.com/img/cs/product_list/r2/cookies.jpg"}
+          :pd {:1 "http://ivanschuetz.com/img/cs/product_details/r1/cookies.jpg" :2 "http://ivanschuetz.com/img/cs/product_details/r2/cookies.jpg"}}    
+    :pr "2" :se "ischuetz"}
+   {:na "Blueberries" :des "Healthy!"
+    :img {
+          :pl {:1 "http://ivanschuetz.com/img/cs/product_list/r1/blueberries.png" :2 "http://ivanschuetz.com/img/cs/product_list/r2/blueberries.png"}
+          :pd {:1 "http://ivanschuetz.com/img/cs/product_details/r1/blueberries.png" :2 "http://ivanschuetz.com/img/cs/product_details/r2/blueberries.png"}}
+    :pr "3" :se "betty123"}
+   {:na "Meat" :des "Bloody!"
+    :img {
+          :pl {:1 "http://ivanschuetz.com/img/cs/product_list/r1/meat.jpg" :2 "http://ivanschuetz.com/img/cs/product_list/r2/meat.jpg"}
+          :pd {:1 "http://ivanschuetz.com/img/cs/product_details/r1/meat.jpg" :2 "http://ivanschuetz.com/img/cs/product_details/r2/meat.jpg"}}
+    :pr "7" :se "a-fisher"}
+   {:na "Juice" :des "Juicy!"
+    :img {
+          :pl {:1 "http://ivanschuetz.com/img/cs/product_list/r1/juice.jpg" :2 "http://ivanschuetz.com/img/cs/product_list/r2/juice.jpg"}
+          :pd {:1 "http://ivanschuetz.com/img/cs/product_details/r1/juice.jpg" :2 "http://ivanschuetz.com/img/cs/product_details/r2/juice.jpg"}}
+    :pr "4" :se "ischuetz"}
    ])
 
 (defn index-to-db-id [index]
@@ -276,7 +302,7 @@
 
   (log/test-name "product-get, authorized, after add one product")
 
-  (let [response (req-get paths/products-get {:st 0 :sz 2})]
+  (let [response (req-get paths/products-get {:st 0 :sz 2 :scsz "640x960"})]
     (log/response response)
 
     (test-valid-response response)
@@ -305,7 +331,7 @@
       (test-success-body body)))
 
   (log/test-name "product-get, after add second product")
-  (let [response (req-get paths/products-get {:st 0 :sz 2})]
+  (let [response (req-get paths/products-get {:st 0 :sz 2 :scsz "640x960"})]
     (log/response response)
 
     (test-valid-response response)
@@ -321,7 +347,7 @@
       ))
 
   (log/test-name "product-get, authorized, after add second product, test pagination")
-  (let [response (req-get paths/products-get {:st 0 :sz 1})]
+  (let [response (req-get paths/products-get {:st 0 :sz 1 :scsz "640x960"})]
     (log/response response)
 
     (test-valid-response response)
@@ -351,7 +377,7 @@
           )
 
         (log/test-name "products-get, after remove")
-        (let [response (req-get paths/products-get {:st 0 :sz 2})]
+        (let [response (req-get paths/products-get {:st 0 :sz 2 :scsz "640x960"})]
           (log/response response)
 
           (test-valid-response response)
@@ -384,7 +410,7 @@
 
 
                 (log/test-name "product-get, authorized, after edit")
-                (let [response (req-get paths/products-get {:st 0 :sz 2})]
+                (let [response (req-get paths/products-get {:st 0 :sz 2 :scsz "640x960"})]
                   (log/response response)
 
                   (test-valid-response response)
@@ -406,7 +432,9 @@
                       )))
                 )
               
-;TODO edit - test properties not editable like seller
+              ;TODO edit - test properties not editable like seller
+
+              ;TODO test resolutions
               ))
         ))
     )
@@ -431,7 +459,7 @@
       (test-body-status body status/validation-error)))
   
     (log/test-name "get-products, empty")
-    (let [response (req-get paths/products-get {:st 0 :sz 2})]
+    (let [response (req-get paths/products-get {:st 0 :sz 2 :scsz "640x960"})]
       (log/response response)
 
       (test-valid-response-with-body response)
@@ -465,6 +493,16 @@
          (test-products-logged-in auth-token))
        )
     ))
+
+
+
+(deftest test-data
+  (clear-db)
+  (register-user1)
+    (add-test-products)
+)
+
+
 
 
 
@@ -705,7 +743,7 @@
 (defn test-cart-logged-in [token]
 
   (log/test-name "cart-get, authorized, cart empty")
-  (let [response (req-get-auth paths/cart-get token)]
+  (let [response (req-get-auth paths/cart-get {:scsz "640x960"} token)]
     (log/response response)
 
     (test-valid-response response)
@@ -735,7 +773,7 @@
        )
 
      (log/test-name "cart-get, authorized, one item")
-     (let [response (req-get-auth paths/cart-get token)]
+     (let [response (req-get-auth paths/cart-get {:scsz "640x960"} token)]
        (log/response response)
 
        (test-valid-response response)
@@ -782,7 +820,7 @@
        )     
      
      (log/test-name "cart-get, authorized, one item with qt 2")
-     (let [response (req-get-auth paths/cart-get token)]
+     (let [response (req-get-auth paths/cart-get {:scsz "640x960"} token)]
        (log/response response)
 
        (test-valid-response response)
@@ -829,7 +867,7 @@
        )
 
      (log/test-name "cart-get, authorized, 2 items - one with qt 2 other qt 1")
-     (let [response (req-get-auth paths/cart-get token)]
+     (let [response (req-get-auth paths/cart-get {:scsz "640x960"} token)]
        (log/response response)
 
        (test-valid-response response)
@@ -890,7 +928,7 @@
          (test-success-body body)))
 
      (log/test-name "cart-get, authorized, checking quantity")
-     (let [response (req-get-auth paths/cart-get token)]
+     (let [response (req-get-auth paths/cart-get {:scsz "640x960"} token)]
        (log/response response)
 
        (test-valid-response response)
@@ -920,7 +958,7 @@
       )
      
      (log/test-name "cart-get, authorized, checking remove")
-     (let [response (req-get-auth paths/cart-get token)]
+     (let [response (req-get-auth paths/cart-get {:scsz "640x960"} token)]
        (log/response response)
 
        (test-valid-response response)
@@ -949,7 +987,7 @@
          (test-body-status body 1)))
 
      (log/test-name "cart-get, authorized, after set quantity of product that's not in the cart")
-     (let [response (req-get-auth paths/cart-get token)]
+     (let [response (req-get-auth paths/cart-get {:scsz "640x960"} token)]
        (log/response response)
 
        (test-valid-response response)
@@ -990,7 +1028,7 @@
    (testing "cart"
 
      (log/test-name "cart-get, not authenticated...")     
-     (let [response (req-get paths/cart-get)]
+     (let [response (req-get paths/cart-get {:scsz "640x960"})]
        (log/response response)
 
        (test-valid-response-with-body response)
