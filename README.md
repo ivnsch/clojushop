@@ -138,7 +138,7 @@ In total, we have 4 images. 2 use cases (list and details), and 2 available reso
 When the client makes a request to get items that contain images, it must send the screen size as "scsz" parameter. Example:
 "scsz":"640x960"
 
-In the function get-res-cat [screen-size] in our handler  (https://github.com/i-schuetz/clojushop/blob/master/src/clojushop/handler.clj), we map this screen size to a resolution category. The algorithm to do this can be anything - for demostrative purposes, we use this:
+In the function get-res-cat [screen-size] in our handler  (https://github.com/i-schuetz/clojushop/blob/master/src/clojushop/handler.clj), we map this screen size to a resolution category. The algorithm to do this can be anything - for demonstrative purposes, we use this:
 
     (if (< (Integer. width) 500) :1 :2)
     
