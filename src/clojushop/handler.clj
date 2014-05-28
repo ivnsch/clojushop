@@ -23,6 +23,7 @@
             [clojushop.http-constants :as chttp]
             [clojushop.data-provider :as dp]
             [clojushop.mongo-data-provider :as mdp]
+            [digest :refer :all]
             )
 
   )
@@ -97,6 +98,12 @@ and then wrap this with a new key wrapper-key"
    (partial wrap-with-key wrapper-key)
    (partial utils/map-var #(ws-obj-mapping-fn %))))
 
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;utils
+
+(defn add-md5 [response-body]
+  (assoc response-body :md5 (digest/md5 (str response-body))))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -184,11 +191,12 @@ and then wrap this with a new key wrapper-key"
 
   (val/validate-products-get params
                              (fn []
-                               (wrap-data-provider-op 
-                                (dp/products-get dp params)
-                                (map-db-result-data-to-ws
-                                 (partial mp/product-ws (get-res-cat (:scsz params)))
-                                 :products)))))
+                               (add-md5
+                                (wrap-data-provider-op 
+                                 (dp/products-get dp params)
+                                 (map-db-result-data-to-ws
+                                  (partial mp/product-ws (get-res-cat (:scsz params)))
+                                  :products))))))
 
 (ws-handler product-add [params]
             (val/validate-product-add params #(dp/product-add dp params)))
@@ -211,11 +219,14 @@ and then wrap this with a new key wrapper-key"
 
 ;NOTE when user id doesn't exist we just return empty cart
 (ws-handler cart-get [params]
-  (val/validate-cart-get params (fn [] (wrap-data-provider-op 
+            (val/validate-cart-get params
+                                   (fn []
+                                     (add-md5
+                                      (wrap-data-provider-op 
                                         (dp/cart-get dp params)
-                                        (map-db-result-data-to-ws
+                                         (map-db-result-data-to-ws
                                          (partial mp/cart-item-db-to-ws (get-res-cat (:scsz params)))
-                                         :cart)))))
+                                         :cart))))))
 
 (ws-handler cart-quantity [params]
             ;TODO use deconstruction to pass parameters
@@ -224,9 +235,12 @@ and then wrap this with a new key wrapper-key"
 
 
 (ws-handler user-get [params]
-  (val/validate-user-get params (fn [] (wrap-data-provider-op 
-                                        (dp/user-get dp params)
-                                        (map-db-result-data-to-ws mp/user-db-to-ws :user)))))
+            (val/validate-user-get params
+                                   (fn []
+                                     (add-md5
+                                      (wrap-data-provider-op 
+                                       (dp/user-get dp params)
+                                       (map-db-result-data-to-ws mp/user-db-to-ws :user))))))
 
 (defn user-remove [params]
   (val/validate-user-remove params #(do

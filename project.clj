@@ -15,6 +15,7 @@
                  [com.novemberain/validateur "2.1.0"]
                  [ring-basic-authentication "1.0.2"]
                  [abengoa/clj-stripe "1.0.4"]
+                 [digest "1.4.4"]
                  ]
   :plugins [[lein-ring "0.8.10"]
             ]
