@@ -44,8 +44,8 @@
 
        (log/debug  (str "Calling: " (var ~fn-name) ", params: " ~@args))
 
-       {:body (do ~@body)} ;we need :body for response to have json
-                           ;content type see http://stackoverflow.com/a/14891584/930450
+       {:body (do ~@body)} ;wrap handler result with body element - Ring sends
+                           ;this as the body of the response
        ;(response ~@body)
        )))
 
