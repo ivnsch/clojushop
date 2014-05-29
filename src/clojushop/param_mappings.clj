@@ -7,6 +7,7 @@
 
 ;TODO rename db-ws-mapping-filtering
 
+;TODO mapping for nested values
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;util

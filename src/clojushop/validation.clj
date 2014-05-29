@@ -55,7 +55,7 @@
    ))
 
 (def validations-product-add
-(val/validation-set
+  (val/validation-set
             (val-empty :na)
             (val-empty :des)
             (val-empty :img)            
@@ -79,10 +79,13 @@
             ;; (val-min-max-length [:img :pd :1] 1 100)
             ;; (val-min-max-length [:img :pd :2] 1 100)            
 
-            (val-min-max-length :pr 1 20)
+            ;(val-min-max-length :pr 1 20)
             (val-min-max-length :se 1 100)
 
-            (val-is-float :pr)))
+            (val-is-float [:pr :v])
+            (val-is-int [:pr :c])
+            )
+)
 
 ;TODO
 (def validations-product-edit

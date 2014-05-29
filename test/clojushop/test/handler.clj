@@ -41,9 +41,14 @@
   (map #(keyword %) (get-record-field-names record)))
 
 
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;helpers
+
+(defn test-is-int [string]
+  (is (re-matches #"^\d*$" string)))
+
+(defn test-is-float [string]
+  (is (re-matches #"^\d*\.?\d*$$" string)))
 
 
 (defn test-valid-product [product]
@@ -69,12 +74,60 @@
     (is (string? (:pl images)))
     (is (string? (:pd images)))
 
+    (is (not (empty? (:v price))))
+    (is (not (empty? (:c price))))    
+
+    (test-is-float (:v price))
+    (test-is-int (:c price))
     
     ;; (is (< 0 (count id) 10))
     ;; (is (< 0 (count name) 30))
     ;; (is (and (>= (count description) 0) (< (count description) 100)))
 ))
 
+
+;TODO cart item contains product, modify test accordingly
+(defn test-valid-cart-item [cart-item]
+  (let [id (:id cart-item)
+        name (:na cart-item)
+        description (:des cart-item)
+        images (:pic cart-item)
+        price (:pr cart-item)
+        seller (:se cart-item)
+
+        quantity (:qt cart-item)
+        ]
+
+    (is (not (empty? id)))
+    (is (not (empty? name)))
+    (is (not (empty? description)))
+    (is (not (empty? images)))
+    (is (not (empty? price)))
+    (is (not (empty? seller)))
+    (is (not (nil? quantity)))
+    
+    (is (map? images))
+    (is (not (empty? (:pl images))))
+    (is (not (empty? (:pd images))))
+
+    ;check that we get only 1 resolution, not map
+    (is (string? (:pl images)))
+    (is (string? (:pd images)))
+
+    (is (not (empty? (:v price))))
+    (is (not (empty? (:c price))))    
+
+    (test-is-float (:v price))
+    (test-is-int (:c price))
+
+    ;TODO all numeric types should have same format, currently price
+    ;is string, quantity int
+    ;(test-is-int quantity)
+
+    ;; (is (< 0 (count id) 10))
+    ;; (is (< 0 (count name) 30))
+    ;; (is (and (>= (count description) 0) (< (count description) 100)))
+))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;request helpers
@@ -224,22 +277,22 @@
     :img {
           :pl {:1 "http://ivanschuetz.com/img/cs/product_list/r1/cookies.jpg" :2 "http://ivanschuetz.com/img/cs/product_list/r2/cookies.jpg"}
           :pd {:1 "http://ivanschuetz.com/img/cs/product_details/r1/cookies.jpg" :2 "http://ivanschuetz.com/img/cs/product_details/r2/cookies.jpg"}}    
-    :pr "2" :se "ischuetz"}
+    :pr {:v "2" :c "1"} :se "ischuetz"}
    {:na "Blueberries" :des "Healthy!"
     :img {
           :pl {:1 "http://ivanschuetz.com/img/cs/product_list/r1/blueberries.png" :2 "http://ivanschuetz.com/img/cs/product_list/r2/blueberries.png"}
           :pd {:1 "http://ivanschuetz.com/img/cs/product_details/r1/blueberries.png" :2 "http://ivanschuetz.com/img/cs/product_details/r2/blueberries.png"}}
-    :pr "3" :se "betty123"}
+    :pr {:v "3.45" :c "1"} :se "betty123"}
    {:na "Meat" :des "Bloody!"
     :img {
           :pl {:1 "http://ivanschuetz.com/img/cs/product_list/r1/meat.jpg" :2 "http://ivanschuetz.com/img/cs/product_list/r2/meat.jpg"}
           :pd {:1 "http://ivanschuetz.com/img/cs/product_details/r1/meat.jpg" :2 "http://ivanschuetz.com/img/cs/product_details/r2/meat.jpg"}}
-    :pr "7" :se "a-fisher"}
+    :pr {:v "7" :c "1"} :se "a-fisher"}
    {:na "Juice" :des "Juicy!"
     :img {
           :pl {:1 "http://ivanschuetz.com/img/cs/product_list/r1/juice.jpg" :2 "http://ivanschuetz.com/img/cs/product_list/r2/juice.jpg"}
           :pd {:1 "http://ivanschuetz.com/img/cs/product_details/r1/juice.jpg" :2 "http://ivanschuetz.com/img/cs/product_details/r2/juice.jpg"}}
-    :pr "4" :se "ischuetz"}
+    :pr {:v "4" :c "1"} :se "ischuetz"}
    ])
 
 (defn index-to-db-id [index]
@@ -794,14 +847,11 @@
            (log/debug (str "item:" item))
            
            (is (not (empty? item)))
+
+           (test-valid-cart-item item)
+           
            (is (= (:id item) (index-to-db-id 0)))
            (is (= (:qt item) 1))
-
-           (is (not (empty? (:na item))))
-           (is (not (empty? (:des item))))
-           (is (not (empty? (:pic item))))
-           (is (not (empty? (:pr item))))
-           (is (not (empty? (:se item))))
            )
          )
        )
@@ -841,14 +891,11 @@
            (log/debug (str "item:" item))
            
            (is (not (empty? item)))
+
+           (test-valid-cart-item item)
+           
            (is (= (:id item) (index-to-db-id 0)))
            (is (= (:qt item) 2))
-
-           (is (not (empty? (:na item))))
-           (is (not (empty? (:des item))))
-           (is (not (empty? (:pic item))))
-           (is (not (empty? (:pr item))))
-           (is (not (empty? (:se item))))
            )
          )
        )
@@ -888,14 +935,11 @@
            (log/debug (str "item:" item))
            
            (is (not (empty? item)))
+
+           (test-valid-cart-item item)
+           
            (is (= (:id item) (index-to-db-id 0)))
            (is (= (:qt item) 2))
-
-           (is (not (empty? (:na item))))
-           (is (not (empty? (:des item))))
-           (is (not (empty? (:pic item))))
-           (is (not (empty? (:pr item))))
-           (is (not (empty? (:se item))))
            )
 
          (let [item (nth (:cart body) 1)]
@@ -906,11 +950,7 @@
            (is (= (:id item) (index-to-db-id 1)))
            (is (= (:qt item) 1))
 
-           (is (not (empty? (:na item))))
-           (is (not (empty? (:des item))))
-           (is (not (empty? (:pic item))))
-           (is (not (empty? (:pr item))))
-           (is (not (empty? (:se item))))
+           (test-valid-cart-item item)
            )
          )
        )     
@@ -944,6 +984,7 @@
          (is (= (count (:cart body)) 2))
          
          (let [item (nth (:cart body) 0)]
+           (test-valid-cart-item item)
            (is (= (:qt item) 3)))))
 
      (log/test-name "cart-remove, authorized")
@@ -1003,6 +1044,7 @@
          (is (= (count (:cart body)) 2)) ;we have again 2 products
          
          (let [item (nth (:cart body) 1)]
+           (test-valid-cart-item item)           
            (is (= (:qt item) 5))))
        )     
      )
