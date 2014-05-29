@@ -1,7 +1,6 @@
 (ns clojushop.validation
   (:require [validateur.validation :as val]
-            [clojushop.status-codes :as status]
-            ))
+            [clojushop.status-codes :as status]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;helpers
@@ -51,132 +50,122 @@
    (val-min-max-length :scsz 1 20)
 
    (val-is-int :st)
-   (val-is-int :sz)
-   ))
+   (val-is-int :sz)))
 
 (def validations-product-add
   (val/validation-set
-            (val-empty :na)
-            (val-empty :des)
-            (val-empty :img)            
-            (val-empty :pr)
-            (val-empty :se)
-
-            ;TODO
-            ;; (val-empty [:img :pd])
-            ;; (val-empty [:img :pl])
+   (val-empty :na)
+   (val-empty :des)
+   (val-empty :img)            
+   (val-empty :pr)
+   (val-empty :se)
+   
+   ;TODO
+   ;; (val-empty [:img :pd])
+   ;; (val-empty [:img :pl])
             
-            ;; (val-empty [:img :pl :1])
-            ;; (val-empty [:img :pl :1])            
-            ;; (val-empty [:img :pd :2])            
-            ;; (val-empty [:img :pd :2])
+   ;; (val-empty [:img :pl :1])
+   ;; (val-empty [:img :pl :1])            
+   ;; (val-empty [:img :pd :2])            
+   ;; (val-empty [:img :pd :2])
             
-            (val-min-max-length :na 1 20)
-            (val-min-max-length :des 1 200)
+   (val-min-max-length :na 1 20)
+   (val-min-max-length :des 1 200)
 
-            ;; (val-min-max-length [:img :pl :1] 1 100)
-            ;; (val-min-max-length [:img :pl :2] 1 100)
-            ;; (val-min-max-length [:img :pd :1] 1 100)
-            ;; (val-min-max-length [:img :pd :2] 1 100)            
+   ;; (val-min-max-length [:img :pl :1] 1 100)
+   ;; (val-min-max-length [:img :pl :2] 1 100)
+   ;; (val-min-max-length [:img :pd :1] 1 100)
+   ;; (val-min-max-length [:img :pd :2] 1 100)            
 
-            ;(val-min-max-length :pr 1 20)
-            (val-min-max-length :se 1 100)
+   ;(val-min-max-length :pr 1 20)
+   (val-min-max-length :se 1 100)
 
-            (val-is-float [:pr :v])
-            (val-is-int [:pr :c])
-            )
-)
+   (val-is-float [:pr :v])
+   (val-is-int [:pr :c])))
 
 ;TODO
 (def validations-product-edit
-  (val/validation-set
-  ))
+  (val/validation-set))
 
 ;TODO
 (def validations-user-edit
-  (val/validation-set
-   ))
+  (val/validation-set))
 
 
 (def validations-remove-product
   (val/validation-set
-            (val-empty :id)
-            
-            (val-db-id :id)))
+   (val-empty :id)
+   
+   (val-db-id :id)))
 
 (def validations-user-register
 
   (val/validation-set
-            (val-empty :una)
-            (val-empty :uem)
-            (val-empty :upw)
+   (val-empty :una)
+   (val-empty :uem)
+   (val-empty :upw)
+   
+   (val-white-sp :una)
+   (val-white-sp :uem)
+   (val-white-sp :upw)            
+   
+   (val-min-max-length :una 1 20)
+   (val-min-max-length :uem 1 30)
+   (val-min-max-length :upw 1 15)
 
-            (val-white-sp :una)
-            (val-white-sp :uem)
-            (val-white-sp :upw)            
-            
-            (val-min-max-length :una 1 20)
-            (val-min-max-length :uem 1 30)
-            (val-min-max-length :upw 1 15)
-
-            ;; (val-email :em) TODO not working with unit test emails
-            ))
+   ;; (val-email :em) TODO not working with unit test emails
+))
 
 (def validations-user-remove
   (val/validation-set
-            (val-empty :una)
-
-            (val-white-sp :una)
-            
-            (val-min-max-length :una 1 20)
-            ))
+   (val-empty :una)
+   
+   (val-white-sp :una)
+   
+   (val-min-max-length :una 1 20)))
 
 (def validations-cart-get
   (val/validation-set
-            (val-empty :una)
+   (val-empty :una)
 
-            (val-min-max-length :una 1 20)            
-            ;(val-db-id :una)
+   (val-min-max-length :una 1 20)            
+   ;(val-db-id :una)
 
-            ;TODO reuse validations from scsz from product
-            ))
+   ;TODO reuse validations from scsz from product
+))
 
 (def validations-cart-add
   (val/validation-set
-            (val-empty :una)
-            (val-empty :pid)
-
-            (val-min-max-length :una 1 20)            
-            (val-db-id :pid)            
-            ))
+   (val-empty :una)
+   (val-empty :pid)
+   
+   (val-min-max-length :una 1 20)            
+   (val-db-id :pid)))
 
 ;TODO
 (def validations-cart-remove
-  (val/validation-set
-            ))
+  (val/validation-set))
 
 ;TODO
 (def validations-cart-quantity
-  (val/validation-set
-            ))
+  (val/validation-set))
 
 (def validations-user-get
   (val/validation-set
-            ;(val-empty :una)
+  ;(val-empty :una)
 
-            ;(val-white-sp :una)
+  ;(val-white-sp :una)
             
-            ;(val-min-max-length :una 1 20)
-            ))
+  ;(val-min-max-length :una 1 20)
+))
 
 (def validations-user-add
   (val/validation-set
-            (val-empty :una)
-            (val-empty :pid)
+   (val-empty :una)
+   (val-empty :pid)
 
-            (val-min-max-length :una 1 20)            
-            (val-db-id :pid)            
-            ))
+   (val-min-max-length :una 1 20)            
+   (val-db-id :pid)))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

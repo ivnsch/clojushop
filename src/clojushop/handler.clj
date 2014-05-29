@@ -24,9 +24,7 @@
             [clojushop.data-provider :as dp]
             [clojushop.mongo-data-provider :as mdp]
             [digest :refer :all]
-            )
-
-  )
+            ))
 
 (import clojushop.mongo_data_provider.MongoDataProvider)
 
@@ -34,24 +32,7 @@
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;macros
-
-(defmacro ws-handler
-  "Wraps return value in body map: {:body return-value}, logs function call and parameters"
-  [fn-name args & body]
-  `(defn ~fn-name ~args
-     (let [now# (System/currentTimeMillis)]
-
-       (log/debug  (str "Calling: " (var ~fn-name) ", params: " ~@args))
-
-       {:body (do ~@body)} ;wrap handler result with body element - Ring sends
-                           ;this as the body of the response
-       ;(response ~@body)
-       )))
-
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;helpers
+;;; Helpers
 
 (defn resp-status-not-found []
   {:status status/not-found})
@@ -61,15 +42,18 @@
 
 
 (def dp-to-ws-status-code-map
+  "Maps the status codes delivered in DataProvider results to webservice status codes."
   {dp-status/error-unspecified status/error-unspecified
    dp-status/success status/success
    dp-status/bad-id status/wrong-params
    dp-status/user-already-exists status/user-already-exists
-   dp-status/not-found status/not-found
-   })
+   dp-status/not-found status/not-found})
 
 
 (defn replace-data-key
+  "Helper function to replace a key in a map called 'data' with a new name 'new-key'.
+  This is used when processing the results of DataProvider read operations, where the requested data
+  is delivered as value of 'data' key, typically to map them to webservice response."
   ([new-key] (partial replace-data-key new-key))
   ([new-key data-map] (utils/replace-key :data new-key data-map)))
 
@@ -78,12 +62,13 @@
   {key object})
 
 (defn wrap-data-provider-op
-  "Generic function to execute a data provider operation and map the returned data provider result to webservice result"
+  "Executes a DataProvider read operation and transforms the result to webservice response.
+  In order to do this, first the result status code of the DataProvider operation is mapped to a webservice status code.
+  Then, if the read operation was successful, the requested data (that is the value of 'data' key of DataProvider result) is mapped to webservice result body,
+  using the passed function 'data-tranformer'. 'data-tranformer' receives the requested data as parameter, and returns json response (as map)."
   [res data-transformer]
   
   (merge {:status (dp-to-ws-status-code-map (:status res))}
-                                        ;if data provider returns a :data object, apply
-                                        ;data-transformer function to it and add to map
       (when (= (:status res) dp-status/success)
         (when (not (nil? (:data res)))
           (data-transformer (:data res))))))
@@ -91,8 +76,8 @@
 
 (defn map-db-result-data-to-ws
   "Helper function to process :data value of database read operation, in order to send it in :body webservice response.
-It will first map the database objects to webservice objects using the function ws-obj-mapping-fn
-and then wrap this with a new key wrapper-key"
+  It will first map the database objects to webservice objects using the function ws-obj-mapping-fn
+  and then wrap this with a new key wrapper-key"
   [ws-obj-mapping-fn wrapper-key]
   (comp
    (partial wrap-with-key wrapper-key)
@@ -100,14 +85,14 @@ and then wrap this with a new key wrapper-key"
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;utils
+;;; Utils
 
 (defn add-md5 [response-body]
   (assoc response-body :md5 (digest/md5 (str response-body))))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;authentication
+;;; Authentication
 
 (defn login [request]
   (let [params (:params request)]
@@ -136,7 +121,7 @@ and then wrap this with a new key wrapper-key"
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;image
+;;; Image
 
 (defn get-res-cat [screen-size]
   "Get resolution category identifier for screen size"
@@ -144,23 +129,25 @@ and then wrap this with a new key wrapper-key"
         width (dims 0)
         height (dims 1)]
 
-    ;replaceme implementation... we use 2 categories and a very simple algorithm - if
+    ;placeholder implementation... we use 2 categories and a very simple algorithm - if
     ;screen width is less than 300 px we return category 1
     ;otherwise 2. The low res pictures turned to be a bit too low,
     ;this is why we the limit is currently only 300 px
     (if (< (Integer. width) 300) :1 :2)))
 
-(defn replace-screen-with-res-cat [params]
+(defn replace-screen-with-res-cat
+  "Replace screen size in passed params map with resolution category"
+  [params]
   (assoc
       (into {} (remove (fn [[k v]] (= k :scsz)) params)) ;remove screen size
     :res (get-res-cat (:scsz params)))) ;add resolution category
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;adapted from ring https://github.com/mmcgrana/ring/blob/master/ring-core/src/ring/middleware/keyword_params.clj
-;to allow keyword syntax starting with numbers
-;TODO put middleware in other namespace, or add letter to keys and
-;use rings middleware
+;; Adapted from ring https://github.com/mmcgrana/ring/blob/master/ring-core/src/ring/middleware/keyword_params.clj
+;; to allow keyword syntax starting with numbers
+;; TODO put middleware in other namespace, or add letter to keys and
+;; use rings middleware
 
 (defn- keyword-syntax? [s]
   (re-matches #"[A-Za-z0-9*+!_?-]*" s))
@@ -183,8 +170,20 @@ and then wrap this with a new key wrapper-key"
   (fn [req] (handler (update-in req [:params] keyify-params))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;handlers
+;;; Webservice handlers
 
+
+(defmacro ws-handler
+  "Wraps return value in body map: {:body return-value}, logs function call and parameters"
+  [fn-name args & body]
+  `(defn ~fn-name ~args
+     (let [now# (System/currentTimeMillis)]
+
+       (log/debug  (str "Calling: " (var ~fn-name) ", params: " ~@args))
+
+       {:body (do ~@body)} ;wrap handler result with body element - Ring sends
+                           ;this as the body of the response
+       )))
 
 
 (ws-handler products-get [params]
@@ -195,7 +194,7 @@ and then wrap this with a new key wrapper-key"
                                 (wrap-data-provider-op 
                                  (dp/products-get dp params)
                                  (map-db-result-data-to-ws
-                                  (partial mp/product-ws (get-res-cat (:scsz params)))
+                                  (partial mp/product-dp->ws (get-res-cat (:scsz params)))
                                   :products))))))
 
 (ws-handler product-add [params]
@@ -225,11 +224,10 @@ and then wrap this with a new key wrapper-key"
                                       (wrap-data-provider-op 
                                         (dp/cart-get dp params)
                                          (map-db-result-data-to-ws
-                                         (partial mp/cart-item-db-to-ws (get-res-cat (:scsz params)))
+                                         (partial mp/cart-item-dp->ws (get-res-cat (:scsz params)))
                                          :cart))))))
 
 (ws-handler cart-quantity [params]
-            ;TODO use deconstruction to pass parameters
             (val/validate-cart-quantity params #(dp/cart-quantity dp params)))
 
 
@@ -240,7 +238,7 @@ and then wrap this with a new key wrapper-key"
                                      (add-md5
                                       (wrap-data-provider-op 
                                        (dp/user-get dp params)
-                                       (map-db-result-data-to-ws mp/user-db-to-ws :user))))))
+                                       (map-db-result-data-to-ws mp/user-dp->ws :user))))))
 
 (defn user-remove [params]
   (val/validate-user-remove params #(do
@@ -254,7 +252,7 @@ and then wrap this with a new key wrapper-key"
   (val/validate-user-edit params #(dp/user-edit dp params)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;routes
+;; Routes
 
 (defroutes public-routes
   (GET paths/products {params :params} (products-get params))
@@ -262,18 +260,18 @@ and then wrap this with a new key wrapper-key"
   (POST paths/user-login request (login request)))
 
 (defroutes protected-routes
-  ;users
+  ;; Users
   (GET paths/user-get {params :params} (user-get params))
   (GET paths/user-remove {params :params} (user-remove params))
   (POST paths/user-edit {params :params} (user-edit params))
   (GET paths/user-logout request (logout request))
 
-  ;products
+  ;; Products
   (POST paths/product-add {params :params} (product-add params))
   (POST paths/product-remove {params :params} (product-remove params))
   (POST paths/product-edit {params :params} (product-edit params))
   
-  ;cart
+  ;; Cart
   (GET paths/cart-get {params :params} (cart-get params))
   (POST paths/cart-remove {params :params} (cart-remove params))
   (POST paths/cart-add {params :params} (cart-add params))
@@ -282,7 +280,6 @@ and then wrap this with a new key wrapper-key"
 (defroutes app-routes
   public-routes
   (wrap-authentication protected-routes)
-  (route/resources "/") ;TODO is this necessary?
   (route/not-found "Not found"))
 
 
@@ -290,8 +287,7 @@ and then wrap this with a new key wrapper-key"
   [handler]
   (fn [request]
     (log/debug ">>> middleware request: " request)
-    (handler request)
-    ))
+    (handler request)))
 
 (defn logging-middleware-resp
   [handler]
@@ -299,26 +295,24 @@ and then wrap this with a new key wrapper-key"
     (let [response (handler request)]
 
       (log/debug ">>> middleware  response: " response)
-      response
-      )
-    ))
+      response)))
 
 (def app
   (->
-      (handler/api app-routes)
+   (handler/api app-routes)
 
-      (session/wrap-session
-       {:cookie-name chttp/session-cookie-prefix :store (cookie-store)}
-       ;{:cookie-attrs {:max-age 3600}}
-       )
+   (session/wrap-session
+    {:cookie-name chttp/session-cookie-prefix :store (cookie-store)}
+    ;{:cookie-attrs {:max-age 3600}}
+    )
       
-      ;(logging-middleware-req)
+    ;(logging-middleware-req)
 
-      (wrap-keyword-params)
+   (wrap-keyword-params)
       
-      (middleware/wrap-json-body)
-      (middleware/wrap-json-params)
-      (middleware/wrap-json-response)
+   (middleware/wrap-json-body)
+   (middleware/wrap-json-params)
+   (middleware/wrap-json-response)
 
-      ;(logging-middleware-resp)
-      ))
+   ;(logging-middleware-resp)
+   ))
