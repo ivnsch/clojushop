@@ -166,7 +166,7 @@ Currently the app suppors a basic credit card payment, using a credit card token
 
 ##### TODOs
 
-Needs lots of online shop relevant stuff, like SKUs (currently Mongo id is used as identifier - very bad!), stock/inventory, improved security, validation, internationaliyation, etc. And of course, more features!
+Needs lots of online shop relevant stuff, like SKUs (currently Mongo id is used as identifier - very bad!), stock/inventory, improved security, validation, internationalization, etc. And of course, more features!
 
 
 
