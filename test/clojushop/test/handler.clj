@@ -205,8 +205,7 @@
   [response]
   (is (= (:status response) 200))
   (is (not (empty? (:body response))))
-  (is (not=  (.indexOf (str (:headers response)) "application/json") -1 ))
-  )
+  (is (not=  (.indexOf (str (:headers response)) "application/json") -1 )))
 
 
 (defn test-not-found
@@ -216,8 +215,7 @@
 (defn test-valid-response-with-body
   [response]
   (test-valid-response response)
-  (is (contains? response :body))
-  )
+  (is (contains? response :body)))
 
 (defn test-valid-body
   [body-json]
@@ -296,8 +294,7 @@
    ])
 
 (defn index-to-db-id [index]
-  (apply str (repeat 24 (str index)))  
-  )
+  (apply str (repeat 24 (str index))))
 
 (defn generate-test-id [documents element]
   (index-to-db-id (.indexOf documents element)))
@@ -313,8 +310,7 @@
   )
 
 (defn clear-db-users []
-  (mc/remove mdp/coll-users)
-  )
+  (mc/remove mdp/coll-users))
 
 (defn clear-db []
   (clear-db-products)
@@ -334,8 +330,7 @@
 ;TODO remove
 (defn register-user1 []
   (let [result (app (request :post paths/user-register {:una "user1" :uem "user2@foo.com" :upw "test123"}))]
-    (println "resgistered rersult: " result))
-  )
+    (println "resgistered rersult: " result)))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -482,16 +477,12 @@
                       (is (= (:na product) new-name))
                       (is (= (:des product) new-desc))
                       (is (= (:pr product) new-price))
-                      )))
-                )
+                      ))))
               
               ;TODO edit - test properties not editable like seller
 
               ;TODO test resolutions
-              ))
-        ))
-    )
-  )
+              ))))))
 
 
 (deftest test-products
@@ -543,17 +534,14 @@
        (let [response (req-post paths/user-login {:una "user1" :upw "test123"})
              auth-token (get-auth-token response)]
 
-         (test-products-logged-in auth-token))
-       )
-    ))
+         (test-products-logged-in auth-token)))))
 
 
 
 (deftest test-data
   (clear-db)
   (register-user1)
-    (add-test-products)
-)
+    (add-test-products))
 
 
 
@@ -702,10 +690,7 @@
             
             (test-body-status body status/not-found)
 
-            (is (not (contains? body :user)))
-            ))
-        ))   
-    ))
+            (is (not (contains? body :user)))))))))
 
 (deftest test-users
 
@@ -733,8 +718,7 @@
 
         (test-valid-body body)
         (test-body-status body status/validation-error)
-        )
-     )
+        ))
 
     (log/test-name "registering user...")
     (let [response (req-post paths/user-register {:una "user1" :uem "user1@foo.com" :upw "test123"})]
@@ -821,9 +805,7 @@
        (let [body (cheshire.core/parse-string (:body response) true)]
 
          (test-valid-body body)
-         (test-success-body body)
-         )
-       )
+         (test-success-body body)))
 
      (log/test-name "cart-get, authorized, one item")
      (let [response (req-get-auth paths/cart-get {:scsz "640x960"} token)]
@@ -851,10 +833,7 @@
            (test-valid-cart-item item)
            
            (is (= (:id item) (index-to-db-id 0)))
-           (is (= (:qt item) 1))
-           )
-         )
-       )
+           (is (= (:qt item) 1)))))
 
      (log/test-name "cart-add, authorized, one item with qt 1")
      (let [response (req-post-auth paths/cart-add {:pid (index-to-db-id 0)} token)]
@@ -865,9 +844,7 @@
        (let [body (cheshire.core/parse-string (:body response) true)]
 
          (test-valid-body body)
-         (test-success-body body)
-         )
-       )     
+         (test-success-body body)))
      
      (log/test-name "cart-get, authorized, one item with qt 2")
      (let [response (req-get-auth paths/cart-get {:scsz "640x960"} token)]
@@ -895,10 +872,7 @@
            (test-valid-cart-item item)
            
            (is (= (:id item) (index-to-db-id 0)))
-           (is (= (:qt item) 2))
-           )
-         )
-       )
+           (is (= (:qt item) 2)))))
 
      (log/test-name "cart-add, authorized, item with different id")
      (let [response (req-post-auth paths/cart-add {:pid (index-to-db-id 1)} token)]
@@ -939,8 +913,7 @@
            (test-valid-cart-item item)
            
            (is (= (:id item) (index-to-db-id 0)))
-           (is (= (:qt item) 2))
-           )
+           (is (= (:qt item) 2)))
 
          (let [item (nth (:cart body) 1)]
 
@@ -950,10 +923,7 @@
            (is (= (:id item) (index-to-db-id 1)))
            (is (= (:qt item) 1))
 
-           (test-valid-cart-item item)
-           )
-         )
-       )     
+           (test-valid-cart-item item))))
      
      (log/test-name "cart-quantity, authorized, set quantity")
      (let [response (req-post-auth paths/cart-quantity {:pid (index-to-db-id 0) :qt 3} token)]
@@ -995,8 +965,7 @@
        
        (let [body (cheshire.core/parse-string (:body response) true)]
          (test-valid-body body)
-         (test-success-body body))
-      )
+         (test-success-body body)))
      
      (log/test-name "cart-get, authorized, checking remove")
      (let [response (req-get-auth paths/cart-get {:scsz "640x960"} token)]
@@ -1045,9 +1014,7 @@
          
          (let [item (nth (:cart body) 1)]
            (test-valid-cart-item item)           
-           (is (= (:qt item) 5))))
-       )     
-     )
+           (is (= (:qt item) 5))))))
 
 
 
@@ -1093,9 +1060,7 @@
        (let [response (req-post paths/user-login {:una "user1" :upw "test123"})
              auth-token (get-auth-token response)]
 
-         (test-cart-logged-in auth-token))
-
-     ))
+         (test-cart-logged-in auth-token))))
 
 (defn test-payment-logged-in [token]
   
@@ -1168,5 +1133,3 @@
              auth-token (get-auth-token response)]
 
          (test-payment-logged-in auth-token)))))
-
-
