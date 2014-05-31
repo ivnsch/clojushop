@@ -77,6 +77,8 @@ Path  | Request type  | Authenticated  | Description  | Params
 /user/login | POST | No | Logs in a user | username: name, password: password 
 /user/logout | GET | Yes | Logs out current user | 
 /user/remove | GET | Yes | Removes current user |
+/pay | POST | Yes | Executes payment and empties cart | to: credit card token, v: amount c: currency ISO code 
+
 
 Note that the api is in early development. This is just to give an overview of what the api is supposed to do. There are many of functions, checks, parameters, etc. that are not implemented yet. Current parameters are likely to change soon / this list may be outdated.
 
