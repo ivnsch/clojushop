@@ -65,23 +65,24 @@
 (defn wrap-with-key [key object]
   {key object})
 
-(defn wrap-data-provider-op
-  "Executes a DataProvider read operation and transforms the result to webservice response.
+(defn map-data-provider-result
+  "Maps data provider read result to body of webservice response.
   In order to do this, first the result status code of the DataProvider operation is mapped to a webservice status code.
-  Then, if the read operation was successful, the requested data (that is the value of 'data' key of DataProvider result) is mapped to webservice result body,
-  using the passed function 'data-tranformer'. 'data-tranformer' receives the requested data as parameter, and returns json response (as map)."
-  [res data-transformer]
+  Then, if the operation was successful, the requested data (which is provided as value of 'data' key), if present (read operation can also return nothing),
+  is mapped to a map, using 'mapper' function, which will be sent to the client, together with status keyval."
+  [res mapper]
   
   (merge {:status (dp-to-ws-status-code-map (:status res))}
       (when (= (:status res) dp-status/success)
         (when (not (nil? (:data res)))
-          (data-transformer (:data res))))))
+          (mapper (:data res))))))
 
 
-(defn map-db-result-data-to-ws
-  "Helper function to process :data value of database read operation, in order to send it in :body webservice response.
-  It will first map the database objects to webservice objects using the function ws-obj-mapping-fn
-  and then wrap this with a new key wrapper-key"
+(defn mapper-partial-with-key
+  "Helper function to construct mapper function which will be passed to map-data-provider-result.
+  It creates a partial and wraps the mapping result with a key 'wrapper-key'
+  The idea of the partial, is that we can pass parameters to the mapper function before it's executed in map-data-provider-result
+  The wrapper key: E.g. we requested products, we get an array. Wrapper-key will be the json key for the array in the response."
   [ws-obj-mapping-fn wrapper-key]
   (comp
    (partial wrap-with-key wrapper-key)
@@ -195,9 +196,9 @@
   (val/validate-products-get params
                              (fn []
                                (add-md5
-                                (wrap-data-provider-op 
+                                (map-data-provider-result 
                                  (dp/products-get dp params)
-                                 (map-db-result-data-to-ws
+                                 (mapper-partial-with-key
                                   (partial mp/product-dp->ws (get-res-cat (:scsz params)))
                                   :products))))))
 
@@ -225,9 +226,9 @@
             (val/validate-cart-get params
                                    (fn []
                                      (add-md5
-                                      (wrap-data-provider-op 
+                                      (map-data-provider-result 
                                         (dp/cart-get dp params)
-                                         (map-db-result-data-to-ws
+                                         (mapper-partial-with-key
                                          (partial mp/cart-item-dp->ws (get-res-cat (:scsz params)))
                                          :cart))))))
 
@@ -240,9 +241,9 @@
             (val/validate-user-get params
                                    (fn []
                                      (add-md5
-                                      (wrap-data-provider-op 
+                                      (map-data-provider-result
                                        (dp/user-get dp params)
-                                       (map-db-result-data-to-ws mp/user-dp->ws :user))))))
+                                       (mapper-partial-with-key mp/user-dp->ws :user))))))
 
 (defn user-remove [params]
   (val/validate-user-remove params #(do
