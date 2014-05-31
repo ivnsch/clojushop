@@ -164,6 +164,9 @@ The correspoding public key has to be inserted in the client.
 Currently the app suppors a basic credit card payment, using a credit card token. The client application gets the credit card data from the user, sends it to Stripe's api to get credit cart token, and then sends the token to Clojushop, together with the transaction amount and currency. Clojushop, then, calls the Stripe api with this data in order to do the transaction. The transactions show immediately in Stripe's dashboard.
 
 
+##### TODOs
+
+Needs lots of online shop relevant stuff, like SKUs (currently Mongo id is used as identifier - very bad!), stock/inventory, improved security, validation, internationaliyation, etc. And of course, more features!
 
 
 
