@@ -1,4 +1,5 @@
-(ns clojushop.param-mappings
+(ns clojushop.mappings
+  #^{:doc "Functions to map parameters/results between handler(webservice) and data provider"}
   (:require [clojushop.utils :as utils])
   (:import
    [org.bson.types ObjectId]))

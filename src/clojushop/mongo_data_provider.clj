@@ -5,7 +5,7 @@
             [monger.operators :refer :all]
             [monger.result :refer [ok? has-error?]]
             [clojushop.dp-status-codes :as dp-status]
-            [clojushop.param-mappings :as mp]
+            [clojushop.mappings :as mp]
             [clojushop.logger :as log]
             [clojushop.data-provider :as dp])
   (:import

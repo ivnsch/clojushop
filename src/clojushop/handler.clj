@@ -16,7 +16,7 @@
             [clojushop.status-codes :as status]
             [clojushop.dp-status-codes :as dp-status]
             [clojushop.validation :as val]
-            [clojushop.param-mappings :as mp]
+            [clojushop.mappings :as mp]
             [clojushop.utils :as utils]
             [clojushop.logger :as log]
             [clojushop.paths :as paths]
@@ -26,9 +26,7 @@
             [digest :refer :all]
             [clj-stripe.common :as str-common]
             [clj-stripe.charges :as str-charges]
-            [clj-stripe.plans :as str-plans]
-            
-            ))
+            [clj-stripe.plans :as str-plans]))
 
 (import clojushop.mongo_data_provider.MongoDataProvider)
 
