@@ -1,4 +1,4 @@
-clojushop
+Clojure shop
 =========
 
 Online store backend/api written in Clojure
