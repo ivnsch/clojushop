@@ -8,8 +8,6 @@ JSON api, currently supports user authentication, product list and cart.
 
 Database is easily interchangeable thanks to data provider layer. Currently MongoDB is used.
 
-Stripe will be used as payment system. Integration is in progress.
-
 This api is intended to be used by mobile apps or ajax applications.
 
 
@@ -112,6 +110,7 @@ Code  | Meaning
 
 The api and dataprovider status codes are independent of each other. The api handler (https://github.com/i-schuetz/clojushop/blob/master/src/clojushop/handler.clj) decides how to handle database result codes. Usually a map will be used to determine api code.
 
+
 ##### Image resolutions
 
 When products are added to the database, the images have to be grouped in resolution categories. A resolution category is a simple numeric identifier. The meaning of the identifier is not fixed, and it depends where and how it's used.
@@ -154,6 +153,13 @@ The items will then be filtered accordingly, such that the client gets only imag
 This is a very flexible implementation, since the client doesn't have to be modified when new resolutions are supported, and server can add arbitrary categories or new logic to determine which images fit best a certain screen size. Client only tells server e.g. "I want the images for the products list, and my screen size is 640x960", and uses whatever images the server delivers. This also works with orientation change, without additional changes - the client sends what currently is width and height and the server determines what fits best. It is not necessary to add additional identifiers for orientation or device type. Yet, orientation change opens the need for an improvement, namely that the client should not have to repeat the request only to get the images for the new orientation. This will probably be solved by calculating both resolutions categories interchanging width and height and send the client both images. In this case the request would keep the same, but the processing of the response would have to be adjusted.
 
 
+##### Payment
+
+Stripe is used as payment system. A Stripe user account is necessary to test payments. The Stripe secret key has to be inserted in the calls. There is a placeholder in handler.clj called "your_stripe_secret_key" for this.
+
+The correspoding public key has to be inserted in the client.
+
+Currently the app suppors a basic credit card payment, using a credit card token. The client application gets the credit card data from the user, sends it to Stripe's api to get credit cart token, and then sends the token to Clojushop, together with the transaction amount and currency. Clojushop, then, calls Stripe api with this data in order to do the transaction. The transactions show immediatly in Stripe's dashboard.
 
 
 
