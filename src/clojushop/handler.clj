@@ -259,7 +259,7 @@
 (ws-handler pay [params]
   (val/validate-pay params #(let [value-to-send (int (* (read-string (:v params)) 100)) ; Stripe wants cents
                                   stripe-result
-                                  (str-common/with-token "your_secret_key:" ;; This is the key we get from Stripe
+                                  (str-common/with-token "your_stripe_secret_key" ; Insert secret key here (and ensure client uses matching public key)
                                     (str-common/execute (str-charges/create-charge (str-common/money-quantity value-to-send (:c params))
                                                                                    (str-common/card  (:to params)) ; Credit card token
                                                                                    (str-common/description (str "Payment test, from user: " (:una params))))))]
