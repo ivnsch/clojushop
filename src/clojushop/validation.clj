@@ -24,7 +24,6 @@
 (defn- val-db-id [keyword]
   (val/format-of keyword :format #"^[0-9a-fA-F]{24}$" :message "id"))
 
-
 (defmulti val-empty class)
 
 (defmethod val-empty clojure.lang.Keyword [keyword]
@@ -168,6 +167,16 @@
    (val-db-id :pid)))
 
 
+(def validations-pay
+  (val/validation-set
+   (val-empty :una)
+   (val-empty :to)
+   (val-empty :v)
+   (val-empty :c)
+
+   (val-is-float :v)))
+
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;TODO validation should not send webservice response
@@ -226,3 +235,7 @@
 
 (defn validate-user-edit [params on-validated]
   (validate validations-user-edit params on-validated))
+
+
+(defn validate-pay [params on-validated]
+  (validate validations-pay params on-validated))

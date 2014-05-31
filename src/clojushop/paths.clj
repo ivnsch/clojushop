@@ -19,3 +19,5 @@
 (def user-login (str user "/login"))
 (def user-logout (str user "/logout"))
 (def user-remove (str user "/remove"))
+
+(def pay "/pay")

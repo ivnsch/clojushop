@@ -1096,3 +1096,77 @@
          (test-cart-logged-in auth-token))
 
      ))
+
+(defn test-payment-logged-in [token]
+  
+  (testing "payment"
+
+     (log/test-name "pay, authenticated, no params...")     
+     (let [response (req-post-auth paths/pay {} token)]
+       (log/response response)
+
+       (test-valid-response-with-body response)
+
+       (let [body (cheshire.core/parse-string (:body response) true)]
+         (test-valid-body body)
+         (test-body-status body status/validation-error))
+       
+       ; TODO get card token
+       ;; (test-payment-logged-in-card-token token card-token)
+       
+       ))
+  (log/test-name "payment, authorized"))
+
+
+(defn test-payment-logged-in-card-token [token card-token]
+  
+  (testing "payment-card-token"
+
+     (log/test-name "pay, authenticated, valid params...")     
+     (let [response (req-post paths/pay {:to card-token :c "eur" :v "15.3"})]
+       (log/response response)
+
+       (test-valid-response-with-body response)
+       (test-success-body body)       
+
+       ; TODO stripe api, cart empty etc.
+       
+       ))
+  (log/test-name "payment, authorized"))
+
+
+
+
+(deftest test-payment
+  
+
+  ;preconditions for tests ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+  ; TODO reset stripe data?
+
+  (clear-db)
+  (add-test-products)
+  (register-user1)
+  ;(add-user1-product-to-cart) TODO
+  
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+   
+   (testing "payment"
+
+     (log/test-name "pay, not authenticated...")     
+     (let [response (req-post paths/pay)]
+       (log/response response)
+
+       (test-valid-response-with-body response)
+       (test-unauthorized response)
+
+       ;tests with logged in user
+       ;register and login a user
+       (register-user1) ;TODO add the user in fill-db-with-test-data
+       (log/test-name "loggin in the user...")
+       (let [response (req-post paths/user-login {:una "user1" :upw "test123"})
+             auth-token (get-auth-token response)]
+
+         (test-payment-logged-in auth-token)))))
+
+

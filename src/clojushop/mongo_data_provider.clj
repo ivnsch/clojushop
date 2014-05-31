@@ -174,6 +174,10 @@
                                                    {$set {"cart.$.qt" quantity}}))]
           result))))
 
+  (cart-clear [this params]
+    (let [user-name (:una params)]
+      (db-write-handler #(mc/update coll-users {:una user-name}
+                                    {$set {:cart []}}))))
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;;; Users

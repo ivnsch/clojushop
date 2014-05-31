@@ -24,6 +24,10 @@
             [clojushop.data-provider :as dp]
             [clojushop.mongo-data-provider :as mdp]
             [digest :refer :all]
+            [clj-stripe.common :as str-common]
+            [clj-stripe.charges :as str-charges]
+            [clj-stripe.plans :as str-plans]
+            
             ))
 
 (import clojushop.mongo_data_provider.MongoDataProvider)
@@ -251,6 +255,23 @@
 (ws-handler user-edit [params]
   (val/validate-user-edit params #(dp/user-edit dp params)))
 
+
+(ws-handler pay [params]
+  (val/validate-pay params #(let [value-to-send (int (* (read-string (:v params)) 100)) ; Stripe wants cents
+                                  stripe-result
+                                  (str-common/with-token "your_secret_key:" ;; This is the key we get from Stripe
+                                    (str-common/execute (str-charges/create-charge (str-common/money-quantity value-to-send (:c params))
+                                                                                   (str-common/card  (:to params)) ; Credit card token
+                                                                                   (str-common/description (str "Payment test, from user: " (:una params))))))]
+
+                              (if (and (nil? (:error stripe-result)) (nil? (:failure_message stripe-result)) (true? (:paid stripe-result)))
+                                (do
+                                  (dp/cart-clear dp params)
+                                  (resp-status-success))
+                                (do
+                                  (log/info (str "Payment error! result: " stripe-result))
+                                  {:status status/error-unspecified})))))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Routes
 
@@ -275,7 +296,11 @@
   (GET paths/cart-get {params :params} (cart-get params))
   (POST paths/cart-remove {params :params} (cart-remove params))
   (POST paths/cart-add {params :params} (cart-add params))
-  (POST paths/cart-quantity {params :params} (cart-quantity params)))
+  (POST paths/cart-quantity {params :params} (cart-quantity params))
+
+  ;; Payment
+  (POST paths/pay {params :params} (pay params)))
+
 
 (defroutes app-routes
   public-routes

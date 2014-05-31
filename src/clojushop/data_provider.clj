@@ -15,7 +15,8 @@
   (cart-remove [this params])
   (cart-get [this params])
   (cart-quantity [this params])
-
+  (cart-clear [this params])
+  
   (user-get [this params])
   (user-register [this params])
   (user-remove [this params])
@@ -41,7 +42,7 @@
 
 (defn error-result
   "Returns a map with data provider error status code, and an optional message.
-  The error status code can be passed as parameter error-code. If it's not passed, dp-status/error-unspecified will be used."
+  If error status code is not passed, dp-status/error-unspecified is used."
   ([] (error-result dp-status/error-unspecified))
   ([error-code] (error-result error-code nil))
   ([error-code msg]
