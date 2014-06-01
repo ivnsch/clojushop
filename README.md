@@ -4,11 +4,9 @@ Clojure shop
 Online store backend/api written in Clojure
 
 
-JSON api, currently supports user authentication, product list and cart.
+JSON api, supports paginated product list, authentication, user account, cart and payment.
 
 Database is easily interchangeable thanks to data provider layer. Currently MongoDB is used.
-
-This api is intended to be used by mobile apps or ajax applications.
 
 
 Note that this is a learning project - use at your own risk.
