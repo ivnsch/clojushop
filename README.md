@@ -164,7 +164,7 @@ Currently the app suppors a basic credit card payment, using a credit card token
 
 ##### Currency
 
-In order to allow maximal flexibility - and don't limit the api with premature decisions, each product is saved with a currency. This may be subject to change, since it's difficult to handle the payment. Currently, the stored currency identifiers are sent to the client, but the client can send only one currency to payment service.
+In order to allow maximal flexibility, each product is saved with a currency. This may be subject to change, since it's difficult to handle the payment. Currently, the stored currency identifiers are sent to the client, but the client can send only one currency to payment service.
 
 
 ##### TODOs
