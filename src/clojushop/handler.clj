@@ -44,7 +44,7 @@
 
 
 (def dp-to-ws-status-code-map
-  "Maps the status codes delivered in DataProvider results to webservice status codes."
+  "Maps the status codes delivered by DataProvider results to webservice status codes."
   {dp-status/error-unspecified status/error-unspecified
    dp-status/success status/success
    dp-status/bad-id status/wrong-params

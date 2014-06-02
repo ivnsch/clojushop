@@ -271,22 +271,22 @@
 ;TODO avoid img path redundancy
 (def dummy-products
   [
-   {:na "Cookies" :des "Tasty!"
+   {:na "Cookies" :des "Lorem ipsum dolor sit amet"
     :img {
           :pl {:1 "http://ivanschuetz.com/img/cs/product_list/r1/cookies.jpg" :2 "http://ivanschuetz.com/img/cs/product_list/r2/cookies.jpg"}
           :pd {:1 "http://ivanschuetz.com/img/cs/product_details/r1/cookies.jpg" :2 "http://ivanschuetz.com/img/cs/product_details/r2/cookies.jpg"}}    
     :pr {:v "2" :c "1"} :se "ischuetz"}
-   {:na "Blueberries" :des "Healthy!"
+   {:na "Blueberries" :des "Lorem ipsum dolor sit amet"
     :img {
           :pl {:1 "http://ivanschuetz.com/img/cs/product_list/r1/blueberries.png" :2 "http://ivanschuetz.com/img/cs/product_list/r2/blueberries.png"}
           :pd {:1 "http://ivanschuetz.com/img/cs/product_details/r1/blueberries.png" :2 "http://ivanschuetz.com/img/cs/product_details/r2/blueberries.png"}}
     :pr {:v "3.45" :c "1"} :se "betty123"}
-   {:na "Meat" :des "Bloody!"
+   {:na "Meat" :des "Lorem ipsum dolor sit amet"
     :img {
           :pl {:1 "http://ivanschuetz.com/img/cs/product_list/r1/meat.jpg" :2 "http://ivanschuetz.com/img/cs/product_list/r2/meat.jpg"}
           :pd {:1 "http://ivanschuetz.com/img/cs/product_details/r1/meat.jpg" :2 "http://ivanschuetz.com/img/cs/product_details/r2/meat.jpg"}}
     :pr {:v "7" :c "1"} :se "a-fisher"}
-   {:na "Juice" :des "Juicy!"
+   {:na "Juice" :des "Lorem ipsum dolor sit amet"
     :img {
           :pl {:1 "http://ivanschuetz.com/img/cs/product_list/r1/juice.jpg" :2 "http://ivanschuetz.com/img/cs/product_list/r2/juice.jpg"}
           :pd {:1 "http://ivanschuetz.com/img/cs/product_details/r1/juice.jpg" :2 "http://ivanschuetz.com/img/cs/product_details/r2/juice.jpg"}}
