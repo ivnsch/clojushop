@@ -30,7 +30,7 @@ curl --request GET 'http://localhost:3000/products?st=0&sz=2'
 Login (note use of cookie store - this will allow us to send next requests authenticated):
 
 ```
-curl -i -H "Content-Type: application/json" -X POST -d '{"username":"user1", "password":"test123"}' http://localhost:3000/login  --cookie "cookies.txt" --cookie-jar "cookies.txt" --location --verbose
+curl -i -H "Content-Type: application/json" -X POST -d '{"una":"user1", "upw":"test123"}' http://localhost:3000/login  --cookie "cookies.txt" --cookie-jar "cookies.txt" --location --verbose
 ```
 
 
