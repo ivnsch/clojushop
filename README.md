@@ -24,20 +24,20 @@ lein ring server-headless
 Get products:
 
 ```
-curl --request GET 'http://localhost:3000/products?st=0&sz=2'
+curl --request GET 'http://localhost:3000/products?st=0&sz=4&scsz=640x960'
 ```
 
 Login (note use of cookie store - this will allow us to send next requests authenticated):
 
 ```
-curl -i -H "Content-Type: application/json" -X POST -d '{"una":"user1", "upw":"test123"}' http://localhost:3000/login  --cookie "cookies.txt" --cookie-jar "cookies.txt" --location --verbose
+curl -i -H "Content-Type: application/json" -X POST -d '{"una":"user1", "upw":"test123"}' http://localhost:3000/user/login  --cookie "cookies.txt" --cookie-jar "cookies.txt" --location --verbose
 ```
 
 
 Get cart (authenticated request):
 
 ```
-curl -i -H --request GET 'http://localhost:3000/cart-get'  --cookie "cookies.txt" --cookie-jar "cookies.txt" --location --verbose
+curl -i -H --request GET 'http://localhost:3000/cart?scsz=640x960'  --cookie "cookies.txt" --cookie-jar "cookies.txt" --location --verbose
 ```
 
 
