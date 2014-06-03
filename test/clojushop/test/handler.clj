@@ -291,6 +291,11 @@
           :pl {:1 "http://ivanschuetz.com/img/cs/product_list/r1/juice.jpg" :2 "http://ivanschuetz.com/img/cs/product_list/r2/juice.jpg"}
           :pd {:1 "http://ivanschuetz.com/img/cs/product_details/r1/juice.jpg" :2 "http://ivanschuetz.com/img/cs/product_details/r2/juice.jpg"}}
     :pr {:v "4" :c "1"} :se "ischuetz"}
+    {:na "Potatoes" :des "Lorem ipsum dolor sit amet"
+    :img {
+          :pl {:1 "http://ivanschuetz.com/img/cs/product_list/r1/potatoes.jpg" :2 "http://ivanschuetz.com/img/cs/product_list/r2/potatoes.jpg"}
+          :pd {:1 "http://ivanschuetz.com/img/cs/product_details/r1/potatoes.jpg" :2 "http://ivanschuetz.com/img/cs/product_details/r2/potatoes.jpg"}}
+    :pr {:v "1" :c "1"} :se "momo"}
    ])
 
 (defn index-to-db-id [index]
