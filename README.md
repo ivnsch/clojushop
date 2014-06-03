@@ -60,10 +60,10 @@ https://github.com/i-schuetz/clojushop_client_ios
 Path  | Request type  | Authenticated  | Description  | Params
 ------------- | ------------- | ------------- | ------------- | -------------
 /products  |  GET  | No |  Gets products list  | st: Page start, sz: Page size, scsz: Screen size e.g. 640x960
-/products/add  | POST | Yes  | Adds a product (current user) |  na: name, des: description, img: image, pr: price, se: seller
-/products/edit  | POST | Yes | Edits a product (current user) | na: name, des: description, img: image, pr: price, se: seller (all optional, but at least 1 required)
-/products/remove  | POST | Yes | Removes a product (current user) | id: product id
-/cart  | GET | Yes | Gets cart (current user) | scsz: Screen size e.g. 640x960
+/products/add  | POST | Yes  | Adds a product |  na: name, des: description, img: image, pr: price, se: seller
+/products/edit  | POST | Yes | Edits a product | na: name, des: description, img: image, pr: price, se: seller (all optional, but at least 1 required)
+/products/remove  | POST | Yes | Removes a product | id: product id
+/cart  | GET | Yes | Gets cart | scsz: Screen size e.g. 640x960
 /cart/add  | POST | Yes | Adds a product to cart | id: product id 
 /cart/remove  | POST | Yes | Removes a product from cart | id: product id 
 /cart/quantity | POST | Yes | Sets the quantity of cart item (upsert) | id: product id, qt: quantity 
