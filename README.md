@@ -47,8 +47,6 @@ curl -i -H --request GET 'http://localhost:3000/cart-get'  --cookie "cookies.txt
 lein test clojushop.test.handler
 ```
 
-The unit tests in https://github.com/i-schuetz/clojushop/blob/master/test/clojushop/test/handler.clj do request calls and response processing like a normal client, thus can also help with further understanding about how to use the api.
-
 
 ##### Example client app (iOS):
 
@@ -77,6 +75,9 @@ Path  | Request type  | Authenticated  | Description  | Params
 /user/remove | GET | Yes | Removes current user |
 /pay | POST | Yes | Executes payment and empties cart | to: credit card token, v: amount c: currency ISO code 
 
+
+
+The unit tests in https://github.com/i-schuetz/clojushop/blob/master/test/clojushop/test/handler.clj do request calls and response processing like a normal client and can help with further understanding about how to use the api.
 
 
 ##### Status codes
@@ -168,8 +169,7 @@ More information about testing Stripe here: https://stripe.com/docs/testing
 
 ##### Currency
 
-In order to allow maximal flexibility, each product is saved with a currency. This may be subject to change, since it's difficult to handle the payment. Currently, the stored currency identifiers are sent to the client, but the client can send only one currency to payment service.
-
+In order to allow maximal flexibility, each product is saved with a currency. This may be subject to change, since it's difficult to handle the payment. Currently, the payment service accepts only one currency.
 
 ##### TODOs
 
