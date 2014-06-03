@@ -159,6 +159,11 @@ The correspoding public key has to be inserted in the client.
 
 Currently the app suppors a basic credit card payment, using a credit card token. The client application gets the credit card data from the user, sends it to Stripe's api to get credit cart token, and then sends the token to Clojushop, together with the transaction amount and currency. Clojushop, then, calls the Stripe api with this data in order to do the transaction. The transactions show immediately in Stripe's dashboard.
 
+Test credit card data:
+
+4242424242424242 with any CVC and a valid expiration date
+More information about testing Stripe here: https://stripe.com/docs/testing
+
 
 ##### Currency
 
