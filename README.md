@@ -161,7 +161,8 @@ Currently the app suppors a basic credit card payment, using a credit card token
 
 Test credit card data:
 
-4242424242424242 with any CVC and a valid expiration date
+4242424242424242 with any CVC and a valid expiration date.
+
 More information about testing Stripe here: https://stripe.com/docs/testing
 
 
