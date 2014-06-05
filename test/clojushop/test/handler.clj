@@ -543,15 +543,6 @@
 
 
 
-(deftest test-data
-  (clear-db)
-  (register-user1)
-    (add-test-products))
-
-
-
-
-
 ; users ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;TODO ? test user names are unique
