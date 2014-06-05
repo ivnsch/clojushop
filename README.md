@@ -47,6 +47,14 @@ curl -i -H --request GET 'http://localhost:3000/cart?scsz=640x960'  --cookie "co
 lein test clojushop.test.handler
 ```
 
+The components can be tested separatedly:
+```
+lein test :only clojushop.test.handler/test-products
+lein test :only clojushop.test.handler/test-cart
+lein test :only clojushop.test.handler/test-users
+lein test :only clojushop.test.handler/test-payment
+```
+
 
 ##### Example client app (iOS):
 
