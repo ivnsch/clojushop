@@ -13,21 +13,20 @@
   (or (info?) (= log-level :warn)))
 
 
-(defn debug [msg]
+(defn debug [& msg]
   (when (debug?)
-    (println (str "debug: ") msg)))
+    (apply println "debug: " msg)))
 
-(defn info [msg]
+(defn info [& msg]
   (when (info?)
-    (println (str "info: " msg))))
+    (apply println "info: " msg)))
 
-(defn warning [msg]
+(defn warning [& msg]
   (when (warning?)
-    (println (str "\nWARNING: " msg "\n"))))
+    (apply println "\nWARNING: " msg "\n")))
 
 (defn test-name [msg]
-  (info (str "\n>>>> " (.toUpperCase msg) "\n")))
+  (println "\n>>>> " (.toUpperCase msg) "\n"))
 
 (defn response [response]
-  (info (str "Response: " response)))
-
+  (println "Response: " response))

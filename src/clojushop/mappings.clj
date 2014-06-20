@@ -6,8 +6,6 @@
 
 ;; TODO decouple from Mongo (ObjectId.)
 
-;; TODO rename db-ws-mapping-filtering
-
 ;; TODO mapping for nested values
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

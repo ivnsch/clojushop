@@ -181,7 +181,7 @@
 
 ;TODO validation should not send webservice response
 ;create validation result handler in handler
-;TODO validation error messages use numers instead of text
+;TODO validation error messages use numbers instead of text
 (defn- validate-on-result [on-validated val-result]
   (if (val/valid? val-result)
     (on-validated)

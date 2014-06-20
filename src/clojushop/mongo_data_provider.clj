@@ -113,7 +113,7 @@
         (do
           (cart-insert user-name product-id 1))
         
-        (let [current-qt (:qt (nth (:cart (into {} item)) 0)) ; TODO
+        (let [current-qt (:qt (nth (:cart (into {} item)) 0))
               result (db-write-handler #(mc/update coll-users {:una user-name "cart.id" product-id}
                                                    {$set {"cart.$.qt" (+ current-qt 1)}}))]
           result))))
@@ -167,6 +167,10 @@
                  (mq/find {:una user-name "cart.id" product-id})
                  )]
 
+
+            (println (str "DB cart-quantity: " + quantity))
+            (println (str "class: " (class quantity)))
+      
       (if (empty? item)
         (do
           (cart-insert user-name product-id quantity))

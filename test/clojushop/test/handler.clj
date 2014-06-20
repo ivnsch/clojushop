@@ -543,6 +543,15 @@
 
 
 
+(deftest test-data
+  (clear-db)
+  (register-user1)
+    (add-test-products))
+
+
+
+
+
 ; users ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;TODO ? test user names are unique
@@ -655,7 +664,7 @@
   (let [response (req-post paths/user-login {:una "user1" :upw "test123"})
         auth-token (get-auth-token response)]
 
-    (log/debug (str "response of login: " response))
+    (log/debug "response of login: " response)
 
     
     (log/test-name "removing user, authenticated")
@@ -822,7 +831,7 @@
 
          (let [item (nth (:cart body) 0)]
 
-           (log/debug (str "item:" item))
+           (log/debug "item:" item)
            
            (is (not (empty? item)))
 
@@ -861,7 +870,7 @@
 
          (let [item (nth (:cart body) 0)]
 
-           (log/debug (str "item:" item))
+           (log/debug "item:" item)
            
            (is (not (empty? item)))
 
@@ -902,7 +911,7 @@
 
          (let [item (nth (:cart body) 0)]
 
-           (log/debug (str "item:" item))
+           (log/debug "item:" item)
            
            (is (not (empty? item)))
 
@@ -913,7 +922,7 @@
 
          (let [item (nth (:cart body) 1)]
 
-           (log/debug (str "item:" item))
+           (log/debug "item:" item)
            
            (is (not (empty? item)))
            (is (= (:id item) (index-to-db-id 1)))

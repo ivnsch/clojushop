@@ -182,7 +182,7 @@
   `(defn ~fn-name ~args
      (let [now# (System/currentTimeMillis)]
 
-       (log/debug  (str "Calling: " (var ~fn-name) ", params: " ~@args))
+       (log/debug "Calling: " (var ~fn-name) ", params: " ~@args)
 
        {:body (do ~@body)} ;wrap handler result with body element - Ring sends
                            ;this as the body of the response
@@ -231,6 +231,9 @@
                                          :cart))))))
 
 (ws-handler cart-quantity [params]
+
+            (println (str "cart-quantity params: " + params))
+            
             (val/validate-cart-quantity params #(dp/cart-quantity dp params)))
 
 
@@ -268,7 +271,7 @@
                                   (dp/cart-clear dp params)
                                   (resp-status-success))
                                 (do
-                                  (log/info (str "Payment error! result: " stripe-result))
+                                  (log/info "Payment error! result: " stripe-result)
                                   {:status status/error-unspecified})))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
