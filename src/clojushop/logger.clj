@@ -2,28 +2,32 @@
 
 (def log-level :info) ;:info :debug :warn
 
-
-(defn- debug? []
-  (= log-level :debug))
-
-(defn- info? []
-  (or (debug?) (= log-level :info)))
+(defn- my-print [label & msg]
+  (println (apply str label msg)))
 
 (defn- warning? []
-  (or (info?) (= log-level :warn)))
+  (= log-level :warn))
 
+(defn- info? []
+  (or (warning?) (= log-level :info)))
+
+(defn- debug? []
+  (or (info?) = log-level :debug))
+
+(defn debug-custom [label & msg]
+  (when (debug?)
+    (apply my-print label msg)))
 
 (defn debug [& msg]
-  (when (debug?)
-    (apply println "debug: " msg)))
+  (apply debug-custom "debug: " msg))
 
 (defn info [& msg]
   (when (info?)
-    (apply println "info: " msg)))
+    (my-print "info: " msg)))
 
 (defn warning [& msg]
   (when (warning?)
-    (apply println "\nWARNING: " msg "\n")))
+    (my-print "\nWARNING: " msg "\n")))
 
 (defn test-name [msg]
   (println "\n>>>> " (.toUpperCase msg) "\n"))

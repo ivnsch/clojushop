@@ -182,7 +182,7 @@
   `(defn ~fn-name ~args
      (let [now# (System/currentTimeMillis)]
 
-       (log/debug "Calling: " (var ~fn-name) ", params: " ~@args)
+       (log/debug-custom "ws call: " (var ~fn-name) ", params: " ~@args)
 
        {:body (do ~@body)} ;wrap handler result with body element - Ring sends
                            ;this as the body of the response
