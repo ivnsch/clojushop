@@ -2,3 +2,7 @@
 .lein-failures
 
 target/stale/extract-native.dependencies
+
+.nrepl-port
+
+target/repl-port
